@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multi-Agent based Non-parametric Motor Design Optimization — MotorAI reverse design console</title>
+<meta name="description" content="Interactive demo: LLM agents breed IPMSM rotor images in an evolutionary loop — Pareto parents, zero-shot and fine-tuned image generation, embedding-based filtering, image-to-CAD FEA evaluation and ε-dominance — with data from a real 5-generation campaign.">
+<meta property="og:title" content="MotorAI — non-parametric reverse design console">
+<meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
+<meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/hero.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=1">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 15l5-5 4 4 3-3 6 6"/><circle cx="16" cy="8" r="1.6" fill="#fff" stroke="none"/></svg>
+      </div>
+      <div>
+        <h1>MotorAI</h1>
+        <p>Reverse Design · Non-parametric</p>
+      </div>
+    </div>
+
+    <button class="newchat" onclick="replayCurrent()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span data-i18n="side.new">New session</span>
+    </button>
+
+    <div class="nav-label" data-i18n="side.ws">Workspace</div>
+    <nav class="nav" id="nav">
+      <button class="nav-item active" data-view="overview">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+        <span class="meta"><b data-i18n="nav.ov.t">Overview</b><span data-i18n="nav.ov.s">System pipeline</span></span>
+        <span class="dot idle"></span>
+      </button>
+
+      <div class="nav-label" data-i18n="side.ag">Agents</div>
+      <button class="nav-item" data-view="agent" data-agent="design">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-11.7 7.8L4 21l1.7-5.3A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14h4"/></svg></span>
+        <span class="meta"><b data-i18n="nav.de.t">Design Agent</b><span data-i18n="nav.de.s">problem card · chat</span></span>
+        <span class="dot"></span>
+      </button>
+      <button class="nav-item" data-view="agent" data-agent="generation">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 13v8M13 17h8"/></svg></span>
+        <span class="meta"><b data-i18n="nav.ge.t">Generation Agent</b><span data-i18n="nav.ge.s">explore · exploit · filter</span></span>
+        <span class="dot"></span>
+      </button>
+      <button class="nav-item" data-view="agent" data-agent="evaluation">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>
+        <span class="meta"><b data-i18n="nav.ev.t">Evaluation Agent</b><span data-i18n="nav.ev.s">CAD → FEA · ε-dominance</span></span>
+        <span class="dot"></span>
+      </button>
+
+      <div class="nav-label" data-i18n="side.loop">Loop</div>
+      <button class="nav-item" data-view="agent" data-agent="campaign">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 3v5h-5"/><circle cx="12" cy="12" r="2"/></svg></span>
+        <span class="meta"><b data-i18n="nav.ga.t">GA Campaign</b><span data-i18n="nav.ga.s">5 generations · Pareto front</span></span>
+        <span class="dot cyan"></span>
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <div class="side-links">
+        <a href="https://hanjinseong.github.io/" target="_blank" rel="noopener">hanjinseong.github.io</a>
+        <a href="https://hanjinseong.github.io/ipmsm-design/" target="_blank" rel="noopener">study 01 ↗</a>
+      </div>
+      <div class="user">
+        <div class="avatar">HJ</div>
+        <div class="meta"><b>한진성 · Jinseong Han</b><span>nethan1012@kaist.ac.kr</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <header class="topbar">
+      <div class="tt">
+        <h2 id="topTitle">System Overview</h2>
+        <p id="topSub">Design → Generate → Evaluate, closed by a GA loop over rotor images</p>
+      </div>
+      <div class="top-tags">
+        <div class="lang-toggle" id="langToggle"><button data-lang="en" class="on">EN</button><button data-lang="ko">KO</button></div>
+        <span class="pill"><span class="led"></span> Live</span>
+        <span class="tag">T2I <b>Qwen-Image-2.1</b></span>
+        <span class="tag">embed <b>Qwen3-VL-Emb-2B</b></span>
+        <span class="tag">solver <b>Maxwell 2D</b></span>
+      </div>
+    </header>
+
+    <section class="stage">
+
+      <!-- ===== OVERVIEW ===== -->
+      <div class="view active" id="view-overview">
+        <div class="hero">
+          <h3 class="hero-title" data-i18n-html="hero.h">Multi-Agent based <span class="grad">Non-parametric Motor Design</span> Optimization</h3>
+          <div class="hero-body">
+            <div class="hero-text">
+              <p data-i18n-html="hero.p">Three LLM agents close an evolutionary loop over rotor images instead of geometry parameters.</p>
+              <div class="kpis">
+                <div class="kpi"><b>3.24×</b><span data-i18n="kpi.1">hypervolume vs baseline</span></div>
+                <div class="kpi"><b>−25.3 %</b><span data-i18n="kpi.2">iron loss (torque within 10 %)</span></div>
+                <div class="kpi"><b>300</b><span data-i18n="kpi.3">FEA solves · 5 generations</span></div>
+              </div>
+            </div>
+            <figure class="hero-figure">
+              <img src="assets/hero.jpg" alt="Montage of generated IPMSM rotor patches" loading="lazy">
+              <figcaption data-i18n="hero.fig">Generated rotor patches · red iron / green void / blue magnet</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="pipe-head"><span>PIPELINE</span><span class="line"></span><span class="mono" style="color:var(--faint);font-weight:500" data-i18n="pipe.sub">design → generate → evaluate ↻ next generation</span></div>
+
+        <div class="pipeline">
+          <div class="stage-card sc-design" data-go="design">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-11.7 7.8L4 21l1.7-5.3A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11h7M8.5 14h4"/></svg></div>
+              <span class="num">AGENT 01</span>
+            </div>
+            <div><div class="role">Design</div><h4 data-i18n="sc.de.t">Problem-card agent</h4></div>
+            <p data-i18n-html="sc.de.p">Chats with you and turns a reference image, the rotor/stator envelope and the objectives into a Design Problem Card.</p>
+            <div class="mech">image + envelope + objectives → problem card</div>
+            <div class="open"><span data-i18n="sc.open">Open</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+
+          <div class="flow-arrow"><svg viewBox="0 0 64 36"><defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7z" fill="#14b8a6"/></marker></defs><line x1="2" y1="18" x2="54" y2="18" stroke="#14b8a6" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#ar)"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.9s" repeatCount="indefinite"/></line></svg></div>
+
+          <div class="stage-card sc-gen" data-go="generation">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 13v8M13 17h8"/></svg></div>
+              <span class="num">AGENT 02</span>
+            </div>
+            <div><div class="role">Generation</div><h4 data-i18n="sc.ge.t">Explore · exploit · filter</h4></div>
+            <p data-i18n-html="sc.ge.p">Breeds a generation from Pareto parents: zero-shot topology moves and fine-tuned text edits, then a feasibility gate and embedding-based filtering.</p>
+            <div class="mech">parents → 200 images → gate → N11 + FPS → 60</div>
+            <div class="open"><span data-i18n="sc.open">Open</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+
+          <div class="flow-arrow"><svg viewBox="0 0 64 36"><line x1="2" y1="18" x2="54" y2="18" stroke="#34d399" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#ar)"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.9s" repeatCount="indefinite"/></line></svg></div>
+
+          <div class="stage-card sc-eval" data-go="evaluation">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div>
+              <span class="num">AGENT 03</span>
+            </div>
+            <div><div class="role">Evaluation</div><h4 data-i18n="sc.ev.t">CAD → FEA → ε-dominance</h4></div>
+            <p data-i18n-html="sc.ev.p">Converts images to STEP, solves Maxwell 2D, judges ε-dominance vs the parent, writes improvement directions and updates the operator scoreboard.</p>
+            <div class="mech">RGB → STEP → FEA → ε vs parent → scoreboard</div>
+            <div class="open"><span data-i18n="sc.open">Open</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="loopstrip" data-go="campaign">
+          <div class="lh"><span data-i18n="loop.h">GA loop · one generation</span><span class="line"></span><span class="mono" data-i18n="loop.sub">click to play the 5-generation campaign</span></div>
+          <div class="lnodes">
+            <div class="ln p"><b data-i18n="loop.n1">Parents</b><span data-i18n="loop.n1s">Pareto front of the FEA archive · 4–8</span></div><div class="larr">→</div>
+            <div class="ln g"><b data-i18n="loop.n2">Exploration</b><span data-i18n="loop.n2s">zero-shot T2I · topology move</span></div><div class="larr">+</div>
+            <div class="ln g"><b data-i18n="loop.n3">Exploitation</b><span data-i18n="loop.n3s">fine-tuned editor · library + transfer</span></div><div class="larr">→</div>
+            <div class="ln g"><b data-i18n="loop.n4">Gate</b><span data-i18n="loop.n4s">infeasible magnets dropped</span></div><div class="larr">→</div>
+            <div class="ln g"><b data-i18n="loop.n5">Filter</b><span data-i18n="loop.n5s">N11 embedding · FPS · 60 kept</span></div><div class="larr">→</div>
+            <div class="ln e"><b data-i18n="loop.n6">FEA</b><span data-i18n="loop.n6s">image → STEP → Maxwell 2D</span></div><div class="larr">→</div>
+            <div class="ln e"><b data-i18n="loop.n7">ε-dominance</b><span data-i18n="loop.n7s">vs parent · 5 % iron / 1 % torque</span></div><div class="larr">→</div>
+            <div class="ln s"><b data-i18n="loop.n8">Scoreboard</b><span data-i18n="loop.n8s">Beta posterior · Thompson shares</span></div>
+          </div>
+          <div class="lback"><span>↻</span><span class="dash"></span><span data-i18n="loop.back">improved designs → directions → next generation's parents and shares</span></div>
+        </div>
+
+        <div class="relrow">
+          <div class="relcard"><h5 data-i18n="rel.1.t">🎯 Two objectives</h5><p data-i18n-html="rel.1.p"></p></div>
+          <div class="relcard"><h5 data-i18n="rel.2.t">🧬 Evolutionary loop</h5><p data-i18n-html="rel.2.p"></p></div>
+          <div class="relcard"><h5 data-i18n="rel.3.t">📊 Operator scoreboard</h5><p data-i18n-html="rel.3.p"></p></div>
+        </div>
+      </div>
+
+      <!-- ===== AGENT (chat + viz) ===== -->
+      <div class="view" id="view-agent">
+        <div class="chat-col">
+          <div class="chat" id="chat"></div>
+          <div class="composer">
+            <div class="inputbar">
+              <input id="userInput" data-i18n-ph="cmp.ph" placeholder="Demo console · scenario auto-play (chat disabled)" autocomplete="off" disabled/>
+              <button class="sendbtn" type="button" disabled aria-disabled="true" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="viz-col">
+          <div class="viz-bar">
+            <div class="vt"><span id="vizTitle">Visualization</span><span class="badge">real data · test3</span></div>
+            <div class="controls">
+              <button class="ctrl primary" id="playBtn" onclick="replayCurrent()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="ctrl.replay">Replay</span>
+              </button>
+              <button class="ctrl" id="pauseBtn" onclick="togglePause()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg><span>Pause</span>
+              </button>
+              <div class="speeds" id="speeds">
+                <button data-sp="0.7">0.7×</button>
+                <button data-sp="1" class="on">1×</button>
+                <button data-sp="1.8">1.8×</button>
+              </div>
+            </div>
+          </div>
+          <div class="stepper" id="stepper"></div>
+          <div class="viz-body" id="vizBody">
+
+            <!-- ===== Design viz: problem card ===== -->
+            <div id="viz-design" style="display:none">
+              <div class="spec">
+                <div class="gcard" id="dc-ref">
+                  <div class="gh"><span class="k">1</span><span data-i18n="ds.ref.h">Reference image</span><span class="ok">✓</span></div>
+                  <div class="gb ref-b">
+                    <div class="ref-img"><img class="thumb" src="assets/d/base.png" alt="reference rotor patch"><div class="ref-leg"><i class="c-iron">iron</i><i class="c-void">void</i><i class="c-pm">magnet</i></div></div>
+                    <div class="ref-meta"><b>Nabla_25838</b><span data-i18n="ds.ref.s1">1/8 rotor patch · 512 px RGB label map</span><span class="mono" data-i18n="ds.ref.s2">baseline FEA 1.178 kW · 285.5 Nm</span></div>
+                  </div>
+                </div>
+                <div class="gcard" id="dc-space">
+                  <div class="gh"><span class="k">2</span><span data-i18n="ds.sp.h">Design space</span><span class="ok">✓</span></div>
+                  <div class="gb">
+                    <div class="dims">
+                      <div class="dim"><svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="22" fill="none" stroke="#9db8ff" stroke-width="2"/><circle cx="27" cy="27" r="9" fill="none" stroke="#9db8ff" stroke-width="2"/><path d="M27 5v10M27 39v10" stroke="#9db8ff" stroke-width="1" stroke-dasharray="2 2"/></svg><b data-i18n="ds.sp.rotor">Rotor</b><span>ID 25 · OD 62 mm</span></div>
+                      <div class="dim"><svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="24" fill="none" stroke="#6ee7b7" stroke-width="2"/><circle cx="27" cy="27" r="13" fill="none" stroke="#6ee7b7" stroke-width="2"/><g stroke="#6ee7b7" stroke-width="2"><path d="M27 3v6M27 45v6M3 27h6M45 27h6M10 10l4 4M40 40l4 4M44 10l-4 4M14 40l-4 4"/></g></svg><b data-i18n="ds.sp.stator">Stator</b><span>ID 65 · OD 125 mm</span></div>
+                      <div class="dim"><svg viewBox="0 0 54 54"><rect x="8" y="12" width="38" height="9" rx="1.5" fill="#2b5cff"/><rect x="10" y="30" width="30" height="8" rx="1.5" fill="#2b5cff" transform="rotate(-18 25 34)"/><rect x="4" y="24" width="8" height="12" fill="#2cf04a"/></svg><b data-i18n="ds.sp.pm">Magnets</b><span data-i18n="ds.sp.pmv">free shape · bars</span></div>
+                    </div>
+                    <div class="note" data-i18n-html="ds.sp.note">Non-parametric: no geometry variables at all.</div>
+                  </div>
+                </div>
+                <div class="gcard" id="dc-obj">
+                  <div class="gh"><span class="k">3</span><span data-i18n="ds.obj.h">Objectives · operating point</span><span class="ok">✓</span></div>
+                  <div class="gb">
+                    <div class="objs">
+                      <div class="objline"><span class="tg dn">↓ min</span><span data-i18n="ds.obj.1">iron loss · objective_kW</span></div>
+                      <div class="objline"><span class="tg up">↑ max</span><span data-i18n="ds.obj.2">mean torque · Nm</span></div>
+                    </div>
+                    <div class="op-grid">
+                      <div class="op"><b>300 A</b><span>Ipk</span></div>
+                      <div class="op"><b>30°</b><span>β</span></div>
+                      <div class="op"><b>6000 rpm</b><span>speed</span></div>
+                    </div>
+                    <div class="cst" data-i18n-html="ds.eps"></div>
+                  </div>
+                </div>
+                <button class="readybtn" id="readybtn" onclick="gotoAgent('generation')" data-i18n="ds.ready">Problem card ready — go to the Generation Agent →</button>
+              </div>
+            </div>
+
+            <!-- ===== Generation viz ===== -->
+            <div id="viz-generation" style="display:none">
+              <div class="gen-wrap">
+                <div class="gcard" id="g-parents">
+                  <div class="gh"><span class="k">P</span><span data-i18n="ge.par.h">Parents · Pareto front of the FEA archive</span><span class="gh-r" id="parInfo"></span></div>
+                  <div class="parents" id="parents"></div>
+                </div>
+                <div class="arms">
+                  <div class="gcard arm-ex" id="g-explore">
+                    <div class="gh"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration · zero-shot T2I</span><span class="gh-r">Qwen-Image-2.1 · cfg 4</span></div>
+                    <div class="move-line"><span class="lab" data-i18n="ge.ex.move">move sentence</span><div class="move" id="moveText">—</div></div>
+                    <div class="shares" id="shares"></div>
+                    <div class="foot" data-i18n="ge.ex.foot">shares = operator scoreboard · Thompson sampling · floor 30 %</div>
+                  </div>
+                  <div class="gcard arm-xp" id="g-exploit">
+                    <div class="gh"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation · fine-tuned editor</span><span class="gh-r">+ LoRA N1000 · cfg 3</span></div>
+                    <div class="split">
+                      <div class="sp-bar"><i id="spLib" style="width:80%"></i><u id="spTr" style="width:20%"></u></div>
+                      <div class="sp-leg"><span><b id="spLibN">library 80</b><em data-i18n="ge.xp.lib" style="font-style:normal">library · dataset-derived directions</em></span><span><b id="spTrN">transfer 20</b><em data-i18n="ge.xp.tr" style="font-style:normal">transfer · last generation's gate-passed directions</em></span></div>
+                    </div>
+                    <pre class="direction" id="dirText"></pre>
+                  </div>
+                </div>
+                <div class="gcard" id="g-pool">
+                  <div class="gh"><span class="k">C</span><span data-i18n="ge.pool.h">Candidate pool → feasibility gate → N11 embedding → FPS filter</span><span class="gh-r" id="poolInfo">0 / 200</span></div>
+                  <div class="pool" id="pool"></div>
+                  <div class="pool-leg">
+                    <i style="--c:#6ee7b7" data-i18n="ge.leg.ex">exploration</i>
+                    <i style="--c:#ffce86" data-i18n="ge.leg.li">library edit</i>
+                    <i style="--c:#fb6f84" data-i18n="ge.leg.tr">transfer edit</i>
+                    <i style="--c:#34d399" data-i18n="ge.leg.kept">kept by FPS</i>
+                    <i style="--c:#22d3ee" data-i18n="ge.leg.forced">predicted front (forced in)</i>
+                  </div>
+                  <div class="pool-stats">
+                    <div class="ps"><span data-i18n="ge.ps.gen">generated</span><b id="psGen">0</b></div>
+                    <div class="ps red"><span data-i18n="ge.ps.gate">gate dropped</span><b id="psGate">0</b></div>
+                    <div class="ps cyan"><span data-i18n="ge.ps.emb">embedded (N11)</span><b id="psEmb">0</b></div>
+                    <div class="ps green"><span data-i18n="ge.ps.kept">kept → FEA</span><b id="psKept">0</b></div>
+                  </div>
+                </div>
+                <button class="readybtn" id="genReady" onclick="gotoAgent('evaluation')" data-i18n="ge.ready">60 designs selected — go to the Evaluation Agent →</button>
+              </div>
+            </div>
+
+            <!-- ===== Evaluation viz ===== -->
+            <div id="viz-evaluation" style="display:none">
+              <div class="ev-wrap">
+                <div class="gcard" id="e-chain">
+                  <div class="gh"><span class="k">1</span><span data-i18n="ev.chain.h">Image → CAD → FEA</span><span class="gh-r" id="feaInfo">0 / 60</span></div>
+                  <div class="chain">
+                    <div class="cn rgb"><img src="assets/d/i01c145.png" alt="RGB label map"><b>RGB</b><span data-i18n="ev.cn.rgb">512 px label map</span></div>
+                    <div class="carr">→</div>
+                    <div class="cn"><img src="assets/cad/binary.png" alt="binary fan image"><b>Binary</b><span data-i18n="ev.cn.bin">2048 px fan binary</span></div>
+                    <div class="carr">→</div>
+                    <div class="cn step"><img src="assets/cad/step.png" alt="STEP outline of magnets and voids"><b>STEP</b><span data-i18n="ev.cn.step">line & fillet · PM / void</span></div>
+                    <div class="carr">→</div>
+                    <div class="cn"><img src="assets/cad/fea.png" alt="Maxwell 2D field plot"><b>Maxwell 2D</b><span data-i18n="ev.cn.fea">transient · ~53 s / design</span></div>
+                  </div>
+                  <div class="feabar"><i id="feaFill"></i></div>
+                </div>
+                <div class="ev-mid">
+                  <div class="gcard" id="e-eps">
+                    <div class="gh"><span class="k">2</span><span data-i18n="ev.eps.h">ε-dominance vs parent · generation 1</span><span class="gh-r" id="epsInfo"></span></div>
+                    <svg id="epsSvg" viewBox="0 0 420 300"></svg>
+                    <div class="legend"><i><b style="background:#34d399"></b><span data-i18n="ev.leg.s">ε-success</span></i><i><b style="background:#646a86"></b><span data-i18n="ev.leg.f">no improvement</span></i><i><b style="background:rgba(52,211,153,.3);border-radius:2px"></b><span data-i18n="ev.leg.box">ε region</span></i></div>
+                  </div>
+                  <div class="ev-side">
+                    <div class="gcard" id="e-sur">
+                      <div class="gh"><span class="k">3</span><span data-i18n="ev.sur.h">Surrogate · CNN deep ensemble</span></div>
+                      <div class="nn-rows">
+                        <div class="nn-row"><span>backbone</span><b>ResNet18 × 5 · β-NLL</b></div>
+                        <div class="nn-row"><span data-i18n="ev.sur.in">input</span><b data-i18n="ev.sur.inv">224 px one-hot label map</b></div>
+                        <div class="nn-row"><span data-i18n="ev.sur.labels">FEA labels</span><b id="surLabels">200</b></div>
+                        <div class="nn-row"><span data-i18n="ev.sur.rho">ρ iron / torque</span><b id="surRho">— / —</b></div>
+                      </div>
+                      <div class="r2bar"><i id="rhoBar"></i></div>
+                      <div class="foot" data-i18n="ev.sur.foot">active learning: every FEA result becomes a label</div>
+                    </div>
+                    <div class="gcard" id="e-dir">
+                      <div class="gh"><span class="k">4</span><span data-i18n="ev.dir.h">Improvement directions</span><span class="gh-r" id="dirInfo"></span></div>
+                      <pre class="direction" id="dirOut"></pre>
+                    </div>
+                  </div>
+                </div>
+                <div class="ev-foot">
+                  <div class="gcard" id="e-score">
+                    <div class="gh"><span class="k">5</span><span data-i18n="ev.sc.h">Operator scoreboard</span><span class="gh-r" data-i18n="ev.sc.r">→ next generation's shares</span></div>
+                    <div class="scores" id="scores"></div>
+                  </div>
+                  <div class="gcard" id="e-report">
+                    <div class="gh"><span class="k">6</span><span data-i18n="ev.rp.h">Report</span></div>
+                    <div class="cards2">
+                      <div class="mcard"><span data-i18n="ev.rp.front">Pareto front</span><b id="rpFront">—</b></div>
+                      <div class="mcard cyan"><span data-i18n="ev.rp.hv">hypervolume</span><b id="rpHV">—</b></div>
+                      <div class="mcard green"><span data-i18n="ev.rp.succ">ε-successes</span><b id="rpSucc">—</b></div>
+                      <div class="mcard amber"><span data-i18n="ev.rp.best">best, torque kept</span><b id="rpBest">—</b></div>
+                    </div>
+                  </div>
+                </div>
+                <button class="readybtn" id="evReady" onclick="gotoAgent('campaign')" data-i18n="ev.ready">Generation evaluated — play the GA campaign →</button>
+              </div>
+            </div>
+
+            <!-- ===== Campaign viz ===== -->
+            <div id="viz-campaign" style="display:none">
+              <div class="ga-wrap">
+                <div class="gens" id="gens"></div>
+                <div class="gcard on" id="c-pareto">
+                  <div class="gh"><span class="k">∑</span><span data-i18n="ga.par.h">FEA archive · Pareto front</span><span class="gh-r" id="parStat"></span></div>
+                  <svg id="paretoSvg" viewBox="0 0 820 360"></svg>
+                  <div class="legend">
+                    <i><b style="background:#5b8cff"></b>G1</i><i><b style="background:#22d3ee"></b>G2</i><i><b style="background:#34d399"></b>G3</i><i><b style="background:#f5a524"></b>G4</i><i><b style="background:#fb6f84"></b>G5</i>
+                    <i><b style="background:#fff;border-radius:1px;transform:rotate(45deg)"></b><span data-i18n="ga.leg.base">baseline</span></i>
+                    <i><b style="background:transparent;border:1.5px solid #fff"></b><span data-i18n="ga.leg.front">Pareto front</span></i>
+                    <i><b style="background:transparent;border:1.5px solid #9aa0b8"></b><span data-i18n="ga.leg.out">outside the box (hollow)</span></i>
+                  </div>
+                </div>
+                <div class="ga-mid">
+                  <div class="gcard on" id="c-hv">
+                    <div class="gh"><span class="k">HV</span><span data-i18n="ga.hv.h">hypervolume vs FEA budget</span><span class="gh-r" id="hvStat"></span></div>
+                    <svg id="hvSvg" viewBox="0 0 300 150"></svg>
+                  </div>
+                  <div class="gcard on" id="c-gal">
+                    <div class="gh"><span class="k">◉</span><span data-i18n="ga.gal.h">Front gallery · inside the reference box</span><span class="gh-r" id="galInfo"></span></div>
+                    <div class="gallery" id="gallery"></div>
+                  </div>
+                </div>
+                <div class="ga-foot">
+                  <div class="mcard"><span data-i18n="ga.k.fea">FEA ok / attempted</span><b id="kFea">—</b></div>
+                  <div class="mcard green"><span data-i18n="ga.k.succ">ε-successes</span><b id="kSucc">—</b></div>
+                  <div class="mcard cyan"><span data-i18n="ga.k.front">front (in box)</span><b id="kFront">—</b></div>
+                  <div class="mcard amber"><span data-i18n="ga.k.hv">HV / baseline</span><b id="kHV">—</b></div>
+                  <div class="gcard on"><div class="gh"><span class="k">⚖</span><span data-i18n="ga.arms">arms · success / tried</span></div><div class="armbars" id="armbars"></div></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>
+<div class="tip" id="tip"></div>
+
+<script src="assets/data.js?v=1"></script>
+<script src="assets/i18n.js?v=1"></script>
+<script src="assets/app.js?v=1"></script>
+</body>
+</html>
