@@ -108,7 +108,7 @@ img{user-select:none}
 .kpi span{font-size:11.5px;color:var(--faint);font-weight:500}
 .hero-figure{flex:none;width:46%;max-width:600px;margin:0;position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border2);background:#0a0c18;
   box-shadow:0 26px 64px -30px rgba(0,0,0,.95),0 0 0 1px rgba(16,185,129,.16)}
-.hero-figure img{display:block;width:100%;aspect-ratio:12/5;object-fit:cover;object-position:center;image-rendering:pixelated}
+.hero-figure img{display:block;width:100%;aspect-ratio:12/5;object-fit:cover;object-position:center}
 .hero-figure::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 52%,rgba(7,10,17,.82) 100%)}
 .hero-figure figcaption{position:absolute;left:14px;bottom:11px;z-index:2;font-size:11px;color:#d6dbef;font-family:var(--mono);letter-spacing:.02em;text-shadow:0 1px 5px rgba(0,0,0,.9)}
 @media (max-width:880px){.hero-body{flex-direction:column;align-items:stretch}.hero-figure{width:100%;max-width:none}.hero-title{white-space:normal}}
