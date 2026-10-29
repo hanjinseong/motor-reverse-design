@@ -266,10 +266,10 @@ function drawEps(n){
   // epsilon regions: iron better by >=5% with torque not worse than 1%  |  torque better by >=1% with iron not worse than 5%
   s.push(`<rect x="${x0}" y="${y1}" width="${ex(-5)-x0}" height="${ey(-1)-y1}" fill="rgba(52,211,153,.07)"/>`);
   s.push(`<rect x="${x0}" y="${y1}" width="${ex(5)-x0}" height="${ey(1)-y1}" fill="rgba(52,211,153,.07)"/>`);
-  for(const gx of [-20,-10,0,10,20])s.push(`<line x1="${ex(gx)}" y1="${y1}" x2="${ex(gx)}" y2="${y0}" stroke="rgba(255,255,255,${gx===0?.18:.05})"/><text x="${ex(gx)}" y="${y0+14}" fill="#646a86" font-size="9" text-anchor="middle" font-family="monospace">${gx>0?'+':''}${gx}%</text>`);
-  for(const gy of [-20,-10,0,10])s.push(`<line x1="${x0}" y1="${ey(gy)}" x2="${x1}" y2="${ey(gy)}" stroke="rgba(255,255,255,${gy===0?.18:.05})"/><text x="${x0-5}" y="${ey(gy)+3}" fill="#646a86" font-size="9" text-anchor="end" font-family="monospace">${gy>0?'+':''}${gy}%</text>`);
-  s.push(`<text x="${(x0+x1)/2}" y="${EPS.H-3}" fill="#9aa0b8" font-size="9.5" text-anchor="middle" font-family="monospace">Δ iron loss vs parent (← better)</text>`);
-  s.push(`<text x="11" y="${(y0+y1)/2}" fill="#9aa0b8" font-size="9.5" text-anchor="middle" font-family="monospace" transform="rotate(-90 11 ${(y0+y1)/2})">Δ torque vs parent (↑ better)</text>`);
+  for(const gx of [-20,-10,0,10,20])s.push(`<line x1="${ex(gx)}" y1="${y1}" x2="${ex(gx)}" y2="${y0}" stroke="rgba(255,255,255,${gx===0?.18:.05})"/><text x="${ex(gx)}" y="${y0+14}" fill="#646a86" font-size="9" text-anchor="middle">${gx>0?'+':''}${gx}%</text>`);
+  for(const gy of [-20,-10,0,10])s.push(`<line x1="${x0}" y1="${ey(gy)}" x2="${x1}" y2="${ey(gy)}" stroke="rgba(255,255,255,${gy===0?.18:.05})"/><text x="${x0-5}" y="${ey(gy)+3}" fill="#646a86" font-size="9" text-anchor="end">${gy>0?'+':''}${gy}%</text>`);
+  s.push(`<text x="${(x0+x1)/2}" y="${EPS.H-3}" fill="#9aa0b8" font-size="9.5" text-anchor="middle">Δ iron loss vs parent (← better)</text>`);
+  s.push(`<text x="11" y="${(y0+y1)/2}" fill="#9aa0b8" font-size="9.5" text-anchor="middle" transform="rotate(-90 11 ${(y0+y1)/2})">Δ torque vs parent (↑ better)</text>`);
   s.push(`<line x1="${ex(-5)}" y1="${y1}" x2="${ex(-5)}" y2="${y0}" stroke="rgba(52,211,153,.5)" stroke-dasharray="3 3"/><line x1="${x0}" y1="${ey(1)}" x2="${x1}" y2="${ey(1)}" stroke="rgba(52,211,153,.5)" stroke-dasharray="3 3"/>`);
   const pts=P1.filter(p=>p.ok&&p.pv);
   pts.slice(0,n).forEach((p,i)=>{
@@ -327,13 +327,13 @@ function resetGA(){
 }
 function drawPareto(k,pop){
   const s=[];const x0=gx(GA.x0),x1=gx(GA.x1),y0=gy(GA.y0),y1=gy(GA.y1);
-  for(const v of [0.8,1.0,1.2,1.4,1.6])s.push(`<line x1="${gx(v)}" y1="${y1}" x2="${gx(v)}" y2="${y0}" stroke="rgba(255,255,255,.05)"/><text x="${gx(v)}" y="${y0+15}" fill="#646a86" font-size="11" text-anchor="middle" font-family="monospace">${v.toFixed(1)}</text>`);
-  for(const v of [100,150,200,250,300,350])s.push(`<line x1="${x0}" y1="${gy(v)}" x2="${x1}" y2="${gy(v)}" stroke="rgba(255,255,255,.05)"/><text x="${x0-7}" y="${gy(v)+4}" fill="#646a86" font-size="11" text-anchor="end" font-family="monospace">${v}</text>`);
-  s.push(`<text x="${(x0+x1)/2}" y="${GA.H-5}" fill="#9aa0b8" font-size="11" text-anchor="middle" font-family="monospace">iron loss (kW) · lower is better</text>`);
-  s.push(`<text x="13" y="${(y0+y1)/2}" fill="#9aa0b8" font-size="11" text-anchor="middle" font-family="monospace" transform="rotate(-90 13 ${(y0+y1)/2})">mean torque (Nm) · higher is better</text>`);
+  for(const v of [0.8,1.0,1.2,1.4,1.6])s.push(`<line x1="${gx(v)}" y1="${y1}" x2="${gx(v)}" y2="${y0}" stroke="rgba(255,255,255,.05)"/><text x="${gx(v)}" y="${y0+15}" fill="#646a86" font-size="11" text-anchor="middle">${v.toFixed(1)}</text>`);
+  for(const v of [100,150,200,250,300,350])s.push(`<line x1="${x0}" y1="${gy(v)}" x2="${x1}" y2="${gy(v)}" stroke="rgba(255,255,255,.05)"/><text x="${x0-7}" y="${gy(v)+4}" fill="#646a86" font-size="11" text-anchor="end">${v}</text>`);
+  s.push(`<text x="${(x0+x1)/2}" y="${GA.H-5}" fill="#9aa0b8" font-size="11" text-anchor="middle">iron loss (kW) · lower is better</text>`);
+  s.push(`<text x="13" y="${(y0+y1)/2}" fill="#9aa0b8" font-size="11" text-anchor="middle" transform="rotate(-90 13 ${(y0+y1)/2})">mean torque (Nm) · higher is better</text>`);
   // HV reference box
   s.push(`<rect x="${x0}" y="${y1}" width="${gx(HVREF[0])-x0}" height="${gy(HVREF[1])-y1}" fill="rgba(34,211,238,.04)" stroke="rgba(34,211,238,.35)" stroke-dasharray="4 4"/>`);
-  s.push(`<text x="${gx(HVREF[0])-5}" y="${gy(HVREF[1])-6}" fill="rgba(34,211,238,.75)" font-size="10.5" text-anchor="end" font-family="monospace">HV reference box · iron ×1.2 / torque ×0.8</text>`);
+  s.push(`<text class="halo" x="${x0+8}" y="${y1+16}" fill="rgba(34,211,238,.8)" font-size="10.5">HV reference box · iron ×1.2 / torque ×0.8</text>`);
   const pts=okUpTo(k);
   pts.forEach(p=>{
     const col=GENCOL[p.it-1],last=p.it===k,ib=inBox(p);
@@ -348,7 +348,7 @@ function drawPareto(k,pop){
   }
   // baseline
   const bx=gx(BASE.iron),by=gy(BASE.tq);
-  s.push(`<path d="M${bx} ${by-8} L${bx+8} ${by} L${bx} ${by+8} L${bx-8} ${by} Z" fill="#fff" stroke="#070a11" stroke-width="1.2"/><text x="${bx+11}" y="${by-9}" fill="#eef0f7" font-size="11" font-family="monospace">baseline</text>`);
+  s.push(`<path d="M${bx} ${by-8} L${bx+8} ${by} L${bx} ${by+8} L${bx-8} ${by} Z" fill="#fff" stroke="#070a11" stroke-width="1.4"/>`);
   $('#paretoSvg').innerHTML=s.join('');
 }
 const HV={W:300,H:150,pl:38,pr:12,pt:14,pb:28,x0:0,x1:300,y0:10,y1:46};
@@ -356,17 +356,17 @@ const hx=v=>HV.pl+(v-HV.x0)/(HV.x1-HV.x0)*(HV.W-HV.pl-HV.pr);
 const hy=v=>HV.H-HV.pb-(v-HV.y0)/(HV.y1-HV.y0)*(HV.H-HV.pt-HV.pb);
 function drawHV(k){
   const s=[];const x0=hx(HV.x0),x1=hx(HV.x1),y0=hy(HV.y0),y1=hy(HV.y1);
-  for(const v of [20,30,40])s.push(`<line x1="${x0}" y1="${hy(v)}" x2="${x1}" y2="${hy(v)}" stroke="rgba(255,255,255,.06)"/><text x="${x0-5}" y="${hy(v)+3}" fill="#646a86" font-size="8.5" text-anchor="end" font-family="monospace">${v}</text>`);
-  for(const v of [0,100,200,300])s.push(`<text x="${hx(v)}" y="${y0+12}" fill="#646a86" font-size="8.5" text-anchor="middle" font-family="monospace">${v}</text>`);
-  s.push(`<text x="${(x0+x1)/2}" y="${HV.H-2}" fill="#9aa0b8" font-size="8.5" text-anchor="middle" font-family="monospace">cumulative FEA solves</text>`);
-  s.push(`<line x1="${x0}" y1="${hy(G1.hv_base)}" x2="${x1}" y2="${hy(G1.hv_base)}" stroke="rgba(255,255,255,.3)" stroke-dasharray="3 3"/><text x="${x1}" y="${hy(G1.hv_base)-4}" fill="#9aa0b8" font-size="8.5" text-anchor="end" font-family="monospace">baseline alone ${G1.hv_base.toFixed(2)}</text>`);
+  for(const v of [20,30,40])s.push(`<line x1="${x0}" y1="${hy(v)}" x2="${x1}" y2="${hy(v)}" stroke="rgba(255,255,255,.06)"/><text x="${x0-5}" y="${hy(v)+3}" fill="#646a86" font-size="8.5" text-anchor="end">${v}</text>`);
+  for(const v of [0,100,200,300])s.push(`<text x="${hx(v)}" y="${y0+12}" fill="#646a86" font-size="8.5" text-anchor="middle">${v}</text>`);
+  s.push(`<text x="${(x0+x1)/2}" y="${HV.H-2}" fill="#9aa0b8" font-size="8.5" text-anchor="middle">cumulative FEA solves</text>`);
+  s.push(`<line x1="${x0}" y1="${hy(G1.hv_base)}" x2="${x1}" y2="${hy(G1.hv_base)}" stroke="rgba(255,255,255,.3)" stroke-dasharray="3 3"/><text x="${x1}" y="${hy(G1.hv_base)-4}" fill="#9aa0b8" font-size="8.5" text-anchor="end">baseline alone ${G1.hv_base.toFixed(2)}</text>`);
   let cum=0;const pts=[[0,G1.hv_base]];
   for(let i=0;i<k;i++){cum+=C.points.filter(p=>p.ok&&p.it===i+1).length;pts.push([cum,G[i].hv]);}
   const d=pts.map((p,i)=>(i?'L':'M')+hx(p[0]).toFixed(1)+' '+hy(p[1]).toFixed(1)).join(' ');
   s.push(`<path d="${d}" fill="none" stroke="url(#hvg)" stroke-width="2.2" stroke-linejoin="round"/>`);
   s.push(`<defs><linearGradient id="hvg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>`);
   pts.forEach((p,i)=>{if(i===0)return;s.push(`<circle cx="${hx(p[0])}" cy="${hy(p[1])}" r="3.4" fill="${GENCOL[i-1]}" stroke="#070a11" stroke-width="1"/>`);});
-  if(k>0){const p=pts[pts.length-1];s.push(`<text x="${hx(p[0])-6}" y="${hy(p[1])-8}" fill="#eef0f7" font-size="10" text-anchor="end" font-family="monospace" font-weight="700">${p[1].toFixed(2)}</text>`);}
+  if(k>0){const p=pts[pts.length-1];s.push(`<text x="${hx(p[0])-6}" y="${hy(p[1])-8}" fill="#eef0f7" font-size="10" text-anchor="end" font-weight="700">${p[1].toFixed(2)}</text>`);}
   $('#hvSvg').innerHTML=s.join('');
 }
 function gaInit(){drawPareto(0,false);$('#parStat').textContent='archive 1 · baseline';}
@@ -398,11 +398,20 @@ function drawParetoSub(sub,k){
   const keep=C.points;C.points=sub;try{drawPareto(k,true);}finally{C.points=keep;}
 }
 function gaFinal(){
-  const best=['PM_1038','PM_1214','PM_1340'];const svg=$('#paretoSvg');
-  C.points.filter(p=>best.includes(p.c)).forEach(p=>{
-    const X=gx(p.iron),Y=gy(p.tq);
-    svg.insertAdjacentHTML('beforeend',`<g><circle cx="${X}" cy="${Y}" r="7" fill="none" stroke="#f5a524" stroke-width="1.6"><animate attributeName="r" values="4;9;7" dur="0.8s"/></circle><text x="${X+11}" y="${Y+4}" fill="#ffce86" font-size="11" font-family="monospace" font-weight="700">${p.c} ${fp(pctOf(p.iron,BASE.iron))}</text></g>`);
+  const svg=$('#paretoSvg');
+  // rightmost design takes the top row, so the leader lines never cross
+  const picks=['PM_1038','PM_1214','PM_1340'].map(c=>C.points.find(p=>p.c===c)).filter(Boolean).sort((a,b)=>b.iron-a.iron);
+  const yBox=gy(HVREF[1]),colX=gx(1.13);
+  picks.forEach((p,i)=>{
+    const X=gx(p.iron),Y=gy(p.tq),ry=yBox+22+i*22;
+    const lbl=`${p.c}   iron ${fp(pctOf(p.iron,BASE.iron))} · torque ${fp(pctOf(p.tq,BASE.tq))}`;
+    svg.insertAdjacentHTML('beforeend',`<g class="callout" style="opacity:0;transition:opacity .5s ${i*.15}s">`+
+      `<path d="M${X} ${Y+7} V${ry} H${colX}" fill="none" stroke="#f5a524" stroke-width="1.1" opacity=".75"/>`+
+      `<circle cx="${X}" cy="${Y}" r="7" fill="none" stroke="#f5a524" stroke-width="1.8"/>`+
+      `<circle cx="${colX}" cy="${ry}" r="2.4" fill="#f5a524"/>`+
+      `<text class="halo" x="${colX+8}" y="${ry+4}" fill="#ffce86" font-size="11.5" font-weight="800">${lbl}</text></g>`);
   });
+  requestAnimationFrame(()=>$$('#paretoSvg .callout').forEach(g=>g.style.opacity=1));
 }
 /* tooltip for FEA points */
 const tip=$('#tip');

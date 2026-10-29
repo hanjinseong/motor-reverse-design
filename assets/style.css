@@ -1,4 +1,13 @@
 /* MotorAI — Non-parametric reverse design console. Sibling of hanjinseong.github.io/ipmsm-design (same shell, green accent). */
+/* Typeface: NanumSquare, Bold (700) for text + ExtraBold (800) for headings — same as hanjinseong.github.io */
+@font-face{font-family:"NanumSquare";font-style:normal;font-weight:700;font-display:swap;
+  src:local("NanumSquare Bold"),local("NanumSquareB"),local("NanumSquareOTF Bold"),
+      url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareB.woff2") format("woff2"),
+      url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareB.woff") format("woff")}
+@font-face{font-family:"NanumSquare";font-style:normal;font-weight:800;font-display:swap;
+  src:local("NanumSquare ExtraBold"),local("NanumSquareEB"),local("NanumSquareOTF ExtraBold"),
+      url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareEB.woff2") format("woff2"),
+      url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareEB.woff") format("woff")}
 :root{
   --bg:#070a11; --bg2:#0a0d18;
   --panel:rgba(255,255,255,.035);
@@ -15,13 +24,13 @@
   --iron:#ff2a2a; --void:#2cf04a; --pm:#2b5cff;
   --g1:#5b8cff; --g2:#22d3ee; --g3:#34d399; --g4:#f5a524; --g5:#fb6f84;
   --r:18px; --r-sm:12px;
-  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
-  --sans:'Inter','Malgun Gothic','Apple SD Gothic Neo',system-ui,-apple-system,sans-serif;
+  --sans:"NanumSquare","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:var(--sans); /* labels use the same family, as on the homepage */
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;font-family:var(--sans);color:var(--text);
+  margin:0;font-family:var(--sans);font-weight:700;color:var(--text);
   background:
     radial-gradient(1100px 700px at 82% -8%,rgba(16,185,129,.14),transparent 60%),
     radial-gradient(900px 600px at -6% 108%,rgba(34,211,238,.10),transparent 55%),
@@ -34,6 +43,9 @@ body{
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.18)}
 button{font-family:inherit;cursor:pointer}
 .mono{font-family:var(--mono)}
+b,strong,h1,h2,h3,h4,h5,h6{font-weight:800}
+svg text{font-family:var(--sans);font-weight:700}
+svg text.halo{paint-order:stroke;stroke:#0a0d18;stroke-width:3.5px;stroke-linejoin:round}
 img{user-select:none}
 
 /* ============================== App shell ============================== */
@@ -43,7 +55,7 @@ img{user-select:none}
 .brand{display:flex;align-items:center;gap:11px;padding:6px 8px 16px}
 .brand .logo{width:38px;height:38px;border-radius:11px;background:var(--accent);display:grid;place-items:center;box-shadow:var(--glow);flex:none}
 .brand .logo svg{width:21px;height:21px}
-.brand h1{font-size:15px;margin:0;font-weight:700;letter-spacing:.2px}
+.brand h1{font-size:15px;margin:0;font-weight:800;letter-spacing:.2px}
 .brand p{margin:2px 0 0;font-size:11px;color:var(--faint);font-weight:500}
 .newchat{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 4px 14px;padding:11px;border-radius:12px;border:0;color:#fff;
   font-weight:600;font-size:13px;background:var(--accent);box-shadow:0 10px 28px -14px rgba(20,184,166,.9);transition:.18s}
@@ -55,7 +67,7 @@ img{user-select:none}
 .nav-item .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.05);flex:none;transition:.16s}
 .nav-item .ic svg{width:16px;height:16px;stroke:currentColor}
 .nav-item .meta{display:flex;flex-direction:column;gap:1px;min-width:0}
-.nav-item .meta b{font-weight:600;color:var(--text);font-size:13.5px}
+.nav-item .meta b{font-weight:800;color:var(--text);font-size:13.5px}
 .nav-item .meta span{font-size:11px;color:var(--faint)}
 .nav-item:hover{background:var(--panel);color:var(--text);border-color:var(--border)}
 .nav-item.active{background:var(--accent-soft);border-color:rgba(16,185,129,.4);color:var(--text)}
@@ -79,7 +91,7 @@ img{user-select:none}
 .main{display:flex;flex-direction:column;min-width:0;min-height:0}
 .topbar{display:flex;align-items:center;gap:16px;padding:15px 24px;border-bottom:1px solid var(--border);background:rgba(7,10,17,.55);backdrop-filter:blur(10px)}
 .topbar .tt{min-width:0}
-.topbar .tt h2{margin:0;font-size:16.5px;font-weight:700;display:flex;align-items:center;gap:10px}
+.topbar .tt h2{margin:0;font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:10px}
 .topbar .tt p{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--panel);color:var(--muted)}
 .pill .led{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
@@ -129,7 +141,7 @@ img{user-select:none}
 .sc-design .ico{background:rgba(139,92,246,.16);color:#b69bff}
 .sc-gen .ico{background:rgba(52,211,153,.14);color:#6ee7b7}
 .sc-eval .ico{background:rgba(245,165,36,.14);color:#ffce86}
-.stage-card h4{margin:0;font-size:16px;font-weight:700}
+.stage-card h4{margin:0;font-size:16px;font-weight:800}
 .stage-card .role{font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .sc-design .role{color:#b69bff}.sc-gen .role{color:#6ee7b7}.sc-eval .role{color:#ffce86}
 .stage-card p{margin:0;font-size:12.7px;color:var(--muted);line-height:1.6}
@@ -174,7 +186,7 @@ img{user-select:none}
 .bubble{padding:12px 15px;border-radius:15px;font-size:13.4px;line-height:1.62}
 .msg.agent .bubble{background:var(--panel2);border:1px solid var(--border);border-top-left-radius:5px}
 .msg.user .bubble{background:linear-gradient(135deg,rgba(91,140,255,.22),rgba(34,211,238,.14));border:1px solid rgba(91,140,255,.3);border-top-right-radius:5px}
-.bubble b{color:#fff;font-weight:600}
+.bubble b{color:#fff;font-weight:800}
 .bubble code{font-family:var(--mono);font-size:12px;background:rgba(0,0,0,.32);padding:1px 6px;border-radius:6px;color:#cfe1ff}
 .typing{display:flex;gap:4px;padding:14px 16px}
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
