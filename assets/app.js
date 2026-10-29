@@ -132,7 +132,7 @@ function flyToken(text,targetSel){
   requestAnimationFrame(()=>{f.style.left=r.left+r.width/2-30+'px';f.style.top=r.top+14+'px';f.style.opacity='0';f.style.transform='scale(.7)';});
   setTimeout(()=>f.remove(),1100);
 }
-function fillRef(){$('#dc-ref').classList.add('on');flyToken('Nabla_25838 · 512 px','#dc-ref');}
+function fillRef(){$('#dc-ref').classList.add('on');flyToken('reference image','#dc-ref');}
 function fillSpace(){$('#dc-space').classList.add('on');flyToken('rotor · stator · PM','#dc-space');$$('#dc-space .dim').forEach((d,i)=>after(120+i*160,()=>d.classList.add('show')));}
 function fillObj(){$('#dc-obj').classList.add('on');flyToken('iron ↓ · torque ↑','#dc-obj');$$('#dc-obj .objline,#dc-obj .cst').forEach((d,i)=>after(120+i*220,()=>d.classList.add('show')));}
 function finishDesign(){$('#readybtn').classList.add('show');}
@@ -428,7 +428,6 @@ const SCENES={
     {who:'agent',key:'de.s9',after:finishDesign},
   ],
   generation:[
-    {who:'user',key:'ge.s1'},
     {who:'agent',key:'ge.s2',after:genParents},
     {who:'agent',key:'ge.s3',after:genExplore},
     {who:'agent',key:'ge.s4',after:genExploit},
@@ -437,7 +436,6 @@ const SCENES={
     {who:'agent',key:'ge.s7',after:finishGen},
   ],
   evaluation:[
-    {who:'user',key:'ev.s1'},
     {who:'agent',key:'ev.s2',after:evChain},
     {who:'agent',key:'ev.s3',after:evFEA,dur:4200},
     {who:'agent',key:'ev.s4',after:evSurrogate},
@@ -447,7 +445,6 @@ const SCENES={
     {who:'agent',key:'ev.s8',after:evReport},
   ],
   campaign:[
-    {who:'user',key:'ga.s1'},
     {who:'agent',key:'ga.s2',after:gaInit},
     {who:'agent',key:'ga.s3',after:()=>gaStep(1)},
     {who:'agent',key:'ga.s4',after:()=>gaStep(2)},
