@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/style.css?v=7">
 </head>
 <body>
 <div class="app">
@@ -255,35 +255,18 @@
               <div class="gen-wrap">
                 <div class="arms">
                   <div class="gcard arm-ex" id="g-explore">
-                    <div class="gh"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration · zero-shot T2I</span><span class="gh-r">Qwen-Image-2.1 · cfg 4</span></div>
-                    <p class="arm-sub" data-i18n-html="ge.ex.sub"></p>
-                    <div class="feat">
-                      <figure><img class="thumb" id="exP" alt="parent design"><figcaption id="exPc"></figcaption></figure>
-                      <div class="feat-arr">→</div>
-                      <figure><img class="thumb" id="exO" alt="generated design"><figcaption id="exOc"></figcaption></figure>
-                    </div>
-                    <div class="feat-txt" id="exTxt"></div>
-                    <div class="ex-strip" id="exStrip"></div>
-                    <div class="foot shares-line" id="sharesLine"></div>
+                    <div class="gh agent-h"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration agent</span><span class="gh-r">zero-shot T2I</span></div>
+                    <p class="arm-sub" data-i18n="ge.ex.sub">Generates diverse new topologies</p>
+                    <div class="gal-grid" id="exGrid"></div>
                   </div>
                   <div class="gcard arm-xp" id="g-exploit">
-                    <div class="gh"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation · text gradient</span><span class="gh-r">fine-tuned editor · LoRA N1000</span></div>
-                    <p class="arm-sub" data-i18n-html="ge.xp.sub"></p>
-                    <div class="split">
-                      <div class="sp-bar"><i id="spLib" style="width:80%"></i><u id="spTr" style="width:20%"></u></div>
-                      <div class="sp-leg"><span><b id="spLibN">library 80</b><em data-i18n="ge.xp.lib" style="font-style:normal">library · dataset-derived directions</em></span><span><b id="spTrN">transfer 20</b><em data-i18n="ge.xp.tr" style="font-style:normal">transfer · last generation's gate-passed directions</em></span></div>
-                    </div>
-                    <div class="feat">
-                      <figure><img class="thumb" id="xpP" alt="parent design"><figcaption id="xpPc"></figcaption></figure>
-                      <div class="feat-arr">→</div>
-                      <figure><img class="thumb" id="xpO" alt="edited design"><figcaption id="xpOc"></figcaption></figure>
-                    </div>
-                    <pre class="direction feat-dir" id="xpTxt"></pre>
-                    <div class="ex-strip" id="xpStrip"></div>
+                    <div class="gh agent-h"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation agent</span><span class="gh-r">fine-tuned T2I</span></div>
+                    <p class="arm-sub" data-i18n="ge.xp.sub">Refines designs along a text gradient</p>
+                    <div class="gal-grid" id="xpGrid"></div>
                   </div>
                 </div>
                 <div class="gcard" id="g-pool">
-                  <div class="gh"><span class="k">C</span><span data-i18n="ge.pool.h">Candidate pool → feasibility gate → N11 embedding → FPS filter</span><span class="gh-r" id="poolInfo">0 / 200</span></div>
+                  <div class="gh agent-h"><span class="k">C</span><span data-i18n="ge.pool.h">Candidate pool → feasibility gate → N11 embedding → FPS filter</span><span class="gh-r" id="poolInfo">0 / 200</span></div>
                   <div class="pool" id="pool"></div>
                   <div class="pool-leg">
                     <i style="--c:#6ee7b7" data-i18n="ge.leg.ex">exploration</i>
@@ -405,8 +388,8 @@
 </div>
 <div class="tip" id="tip"></div>
 
-<script src="assets/data.js?v=3"></script>
-<script src="assets/i18n.js?v=6"></script>
-<script src="assets/app.js?v=6"></script>
+<script src="assets/data.js?v=4"></script>
+<script src="assets/i18n.js?v=7"></script>
+<script src="assets/app.js?v=7"></script>
 </body>
 </html>
