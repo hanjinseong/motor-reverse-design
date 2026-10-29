@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=11">
+<link rel="stylesheet" href="assets/style.css?v=114">
 </head>
 <body>
 <div class="app">
@@ -193,7 +193,7 @@
 
         <div class="viz-col">
           <div class="viz-bar">
-            <div class="vt"><span id="vizTitle">Visualization</span><span class="badge">real data · test3</span></div>
+            <div class="vt"><span id="vizTitle">Visualization</span><span class="badge">real data</span></div>
             <div class="controls">
               <button class="ctrl primary" id="playBtn" onclick="replayCurrent()">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span data-i18n="ctrl.replay">Replay</span>
@@ -224,9 +224,9 @@
                   <div class="gh"><span class="k">2</span><span data-i18n="ds.sp.h">Design space</span><span class="ok">✓</span></div>
                   <div class="gb">
                     <div class="dims">
-                      <div class="dim"><svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="22" fill="none" stroke="#9db8ff" stroke-width="2"/><circle cx="27" cy="27" r="9" fill="none" stroke="#9db8ff" stroke-width="2"/><path d="M27 5v10M27 39v10" stroke="#9db8ff" stroke-width="1" stroke-dasharray="2 2"/></svg><b data-i18n="ds.sp.rotor">Rotor</b><span>ID 25 · OD 62 mm</span></div>
-                      <div class="dim"><svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="24" fill="none" stroke="#6ee7b7" stroke-width="2"/><circle cx="27" cy="27" r="13" fill="none" stroke="#6ee7b7" stroke-width="2"/><g stroke="#6ee7b7" stroke-width="2"><path d="M27 3v6M27 45v6M3 27h6M45 27h6M10 10l4 4M40 40l4 4M44 10l-4 4M14 40l-4 4"/></g></svg><b data-i18n="ds.sp.stator">Stator</b><span>ID 65 · OD 125 mm</span></div>
-                      <div class="dim"><svg viewBox="0 0 54 54"><rect x="8" y="12" width="38" height="9" rx="1.5" fill="#2b5cff"/><rect x="10" y="30" width="30" height="8" rx="1.5" fill="#2b5cff" transform="rotate(-18 25 34)"/><rect x="4" y="24" width="8" height="12" fill="#2cf04a"/></svg><b data-i18n="ds.sp.pm">Magnets</b><span data-i18n="ds.sp.pmv">free shape · bars</span></div>
+                      <div class="dim"><svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="22" fill="none" stroke="#9db8ff" stroke-width="2"/><circle cx="27" cy="27" r="9" fill="none" stroke="#9db8ff" stroke-width="2"/><path d="M27 5v10M27 39v10" stroke="#9db8ff" stroke-width="1" stroke-dasharray="2 2"/></svg><b data-i18n="ds.sp.rotor">Rotor</b></div>
+                      <div class="dim"><svg viewBox="0 0 54 54"><circle cx="27" cy="27" r="24" fill="none" stroke="#6ee7b7" stroke-width="2"/><circle cx="27" cy="27" r="13" fill="none" stroke="#6ee7b7" stroke-width="2"/><g stroke="#6ee7b7" stroke-width="2"><path d="M27 3v6M27 45v6M3 27h6M45 27h6M10 10l4 4M40 40l4 4M44 10l-4 4M14 40l-4 4"/></g></svg><b data-i18n="ds.sp.stator">Stator</b></div>
+                      <div class="dim"><svg viewBox="0 0 54 54"><rect x="8" y="12" width="38" height="9" rx="1.5" fill="#2b5cff"/><rect x="10" y="30" width="30" height="8" rx="1.5" fill="#2b5cff" transform="rotate(-18 25 34)"/><rect x="4" y="24" width="8" height="12" fill="#2cf04a"/></svg><b data-i18n="ds.sp.pm">Magnets</b></div>
                     </div>
                     <div class="note" data-i18n-html="ds.sp.note">Non-parametric: no geometry variables at all.</div>
                   </div>
@@ -322,56 +322,42 @@
             <!-- ===== Evaluation viz ===== -->
             <div id="viz-evaluation" style="display:none">
               <div class="ev-wrap">
-                <div class="gcard" id="e-chain">
-                  <div class="gh"><span class="k">1</span><span data-i18n="ev.chain.h">Image → CAD → FEA</span><span class="gh-r" id="feaInfo">0 / 60</span></div>
-                  <div class="chain">
-                    <div class="cn rgb"><img src="assets/d/i01c145.png" alt="RGB label map"><b>RGB</b><span data-i18n="ev.cn.rgb">512 px label map</span></div>
-                    <div class="carr">→</div>
-                    <div class="cn"><img src="assets/cad/binary.png" alt="binary fan image"><b>Binary</b><span data-i18n="ev.cn.bin">2048 px fan binary</span></div>
-                    <div class="carr">→</div>
-                    <div class="cn step"><img src="assets/cad/step.png" alt="STEP outline of magnets and voids"><b>STEP</b><span data-i18n="ev.cn.step">line & fillet · PM / void</span></div>
-                    <div class="carr">→</div>
-                    <div class="cn"><img src="assets/cad/fea.png" alt="Maxwell 2D field plot"><b>Maxwell 2D</b><span data-i18n="ev.cn.fea">transient · ~53 s / design</span></div>
-                  </div>
-                  <div class="feabar"><i id="feaFill"></i></div>
+                <div class="gcard" id="e-cad">
+                  <div class="gh"><span class="k">1</span><span data-i18n="ev.cad.h">Image → CAD</span><span class="gh-r" id="cadInfo">PM_1038 · generation 1</span></div>
+                  <div class="cs-row"><div class="cs " data-s="0"><div class="cs-fig"><img class="px" src="assets/d/i01c145.png" alt=""></div><b data-i18n="ev.c1.t">RGB image</b><span data-i18n="ev.c1.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="1"><div class="cs-fig"><img src="assets/cad/binary.png" alt=""></div><b data-i18n="ev.c2.t">Binary</b><span data-i18n="ev.c2.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="2"><div class="cs-fig"><img src="assets/cad/sdf.png" alt=""></div><b data-i18n="ev.c3.t">Signed distance field</b><span data-i18n="ev.c3.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="3"><div class="cs-fig"><svg id="cadEdges"></svg></div><b data-i18n="ev.c4.t">Lines & fillets</b><span data-i18n="ev.c4.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="4"><div class="cs-fig"><svg id="cadStep"></svg></div><b data-i18n="ev.c5.t">STEP</b><span data-i18n="ev.c5.c"></span></div></div>
                 </div>
-                <div class="ev-mid">
-                  <div class="gcard" id="e-eps">
-                    <div class="gh"><span class="k">2</span><span data-i18n="ev.eps.h">ε-dominance vs parent</span><span class="gh-r" id="epsInfo"></span></div>
-                    <svg id="epsSvg" viewBox="0 0 420 300"></svg>
-                    <div class="legend"><i><b style="background:#34d399"></b><span data-i18n="ev.leg.s">ε-success</span></i><i><b style="background:#646a86"></b><span data-i18n="ev.leg.f">no improvement</span></i><i><b style="background:rgba(52,211,153,.3);border-radius:2px"></b><span data-i18n="ev.leg.box">ε region</span></i></div>
-                  </div>
-                  <div class="ev-side">
-                    <div class="gcard" id="e-sur">
-                      <div class="gh"><span class="k">3</span><span data-i18n="ev.sur.h">CNN surrogate</span></div>
-                      <div class="nn-rows">
-                        <div class="nn-row"><span>backbone</span><b>ResNet18 × 5 · β-NLL</b></div>
-                        <div class="nn-row"><span data-i18n="ev.sur.in">input</span><b data-i18n="ev.sur.inv">224 px one-hot label map</b></div>
-                        <div class="nn-row"><span data-i18n="ev.sur.labels">FEA labels</span><b id="surLabels">200</b></div>
-                        <div class="nn-row"><span data-i18n="ev.sur.rho">ρ iron / torque</span><b id="surRho">— / —</b></div>
-                      </div>
-                      <div class="r2bar"><i id="rhoBar"></i></div>
-                      <div class="foot" data-i18n="ev.sur.foot">active learning: every FEA result becomes a label</div>
-                    </div>
-                    <div class="gcard" id="e-dir">
-                      <div class="gh"><span class="k">4</span><span data-i18n="ev.dir.h">Text gradients</span><span class="gh-r" id="dirInfo"></span></div>
-                      <pre class="direction" id="dirOut"></pre>
-                    </div>
-                  </div>
+                <div class="gcard" id="e-fea">
+                  <div class="gh"><span class="k">2</span><span data-i18n="ev.fea.h">CAD → FEA</span><span class="gh-r">Maxwell 2D</span></div>
+                  <div class="cs-row cs-row4"><div class="cs " data-s="5"><div class="cs-fig"><svg id="feaAlign"></svg></div><b data-i18n="ev.f1.t">Coordinate alignment</b><span data-i18n="ev.f1.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="6"><div class="cs-fig"><svg id="feaMag"></svg></div><b data-i18n="ev.f2.t">Magnetization</b><span data-i18n="ev.f2.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="7"><div class="cs-fig"><svg id="feaMotor"></svg></div><b data-i18n="ev.f3.t">FEA model</b><span data-i18n="ev.f3.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="8"><div class="cs-fig"><div class="solve"><div class="sv-num"><b id="svIron">—</b><span>kW iron loss</span></div><div class="sv-num"><b id="svTq">—</b><span>Nm torque</span></div><svg id="svWave" viewBox="0 0 200 70" preserveAspectRatio="none"></svg></div></div><b data-i18n="ev.f4.t">Maxwell 2D solve</b><span data-i18n="ev.f4.c"></span></div></div>
                 </div>
-                <div class="ev-foot">
-                  <div class="gcard" id="e-score">
-                    <div class="gh"><span class="k">5</span><span data-i18n="ev.sc.h">Operator scoreboard</span></div>
-                    <div class="scores" id="scores"></div>
-                  </div>
-                  <div class="gcard" id="e-report">
-                    <div class="gh"><span class="k">6</span><span data-i18n="ev.rp.h">Report</span></div>
-                    <div class="cards2">
-                      <div class="mcard"><span data-i18n="ev.rp.front">Pareto front</span><b id="rpFront">—</b></div>
-                      <div class="mcard cyan"><span data-i18n="ev.rp.hv">hypervolume</span><b id="rpHV">—</b></div>
-                      <div class="mcard green"><span data-i18n="ev.rp.succ">ε-successes</span><b id="rpSucc">—</b></div>
-                      <div class="mcard amber"><span data-i18n="ev.rp.best">best, torque kept</span><b id="rpBest">—</b></div>
+                <div class="gcard" id="e-hyb">
+                  <div class="gh"><span class="k">3</span><span data-i18n="ev.hyb.h">FEA-AI hybrid model</span><span class="gh-r" data-i18n="ev.hyb.r">uncertainty-aware switching</span></div>
+                  <div class="hyb-top">
+                    <div class="tau-box">
+                      <span class="tau-lab" data-i18n="ev.tau.lab">switching threshold τ</span>
+                      <b class="tau-val" id="tauVal">— W</b>
+                      <span class="tau-sub" data-i18n="ev.tau.sub">on σ of predicted iron loss</span>
+                      <span class="llm-chip" id="llmChip"><i></i> LLM controller · gpt-oss:20b</span>
                     </div>
+                    <div class="sig-box">
+                      <div class="p-lab"><span data-i18n="ev.sig.h">σ of the 60 designs this round</span><span class="sp-info" id="roundInfo"></span></div>
+                      <svg id="sigSvg" viewBox="0 0 600 92"></svg>
+                    </div>
+                  </div>
+                  <div class="router" id="router">
+                    <svg class="wires" id="wires"></svg>
+                    <div class="node pop" id="n-pop"><div class="t" data-i18n="ev.n.pop">Filtered designs</div><div class="s">60 / round</div></div>
+                    <div class="node gate" id="n-gate"><div class="t">σ ≥ τ ?</div><div class="s" data-i18n="ev.n.gate">uncertainty gate</div><div class="gatebar"><u id="gateMark"></u></div></div>
+                    <div class="node fea" id="n-fea"><div class="nicon"><img src="assets/cad/fea.png" alt=""></div><div class="t">FEA · Maxwell 2D</div><div class="s" data-i18n="ev.n.fea">~53 s · exact</div><div class="cnt" id="cFea">0</div></div>
+                    <div class="node ai" id="n-ai"><div class="nicon"><img src="assets/cad/ai.svg" alt=""></div><div class="t">AI · CNN ensemble</div><div class="s" data-i18n="ev.n.ai">ms · μ + σ</div><div class="cnt" id="cAi">0</div></div>
+                    <div class="node sur" id="n-sur"><div class="t" data-i18n="ev.n.sur">Retrain surrogate</div><div class="s">active learning ↻</div></div>
+                    <div class="reason" id="reason"></div>
+                  </div>
+                  <div class="hyb-foot">
+                    <div class="mcard amber"><span data-i18n="ev.m.fea">FEA calls</span><b id="mFea">0</b></div>
+                    <div class="mcard green"><span data-i18n="ev.m.ai">AI evaluations</span><b id="mAi">0</b></div>
+                    <div class="mcard cyan"><span data-i18n="ev.m.share">AI share</span><b id="mShare">0 %</b></div>
+                    <div class="mcard"><span data-i18n="ev.m.save">FEA time saved</span><b id="mSave">0 min</b></div>
                   </div>
                 </div>
                 <button class="readybtn" id="evReady" onclick="gotoAgent('campaign')" data-i18n="ev.ready">Generation evaluated — play the GA campaign →</button>
@@ -421,8 +407,8 @@
 </div>
 <div class="tip" id="tip"></div>
 
-<script src="assets/data.js?v=5"></script>
-<script src="assets/i18n.js?v=10"></script>
-<script src="assets/app.js?v=10"></script>
+<script src="assets/data.js?v=6"></script>
+<script src="assets/i18n.js?v=12"></script>
+<script src="assets/app.js?v=12"></script>
 </body>
 </html>

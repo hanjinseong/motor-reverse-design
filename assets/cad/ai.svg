@@ -1,0 +1,31 @@
+<svg viewBox="0 0 206 116" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>AI surrogate: neural network mapping design variables to a predicted distribution</title>
+  <defs>
+    <filter id="gA" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- edges -->
+  <g stroke="#34d399" stroke-width="1" opacity=".24">
+    <line x1="28" y1="40" x2="90" y2="24"/><line x1="28" y1="40" x2="90" y2="46"/><line x1="28" y1="40" x2="90" y2="68"/><line x1="28" y1="40" x2="90" y2="90"/>
+    <line x1="28" y1="58" x2="90" y2="24"/><line x1="28" y1="58" x2="90" y2="46"/><line x1="28" y1="58" x2="90" y2="68"/><line x1="28" y1="58" x2="90" y2="90"/>
+    <line x1="28" y1="76" x2="90" y2="24"/><line x1="28" y1="76" x2="90" y2="46"/><line x1="28" y1="76" x2="90" y2="68"/><line x1="28" y1="76" x2="90" y2="90"/>
+    <line x1="90" y1="24" x2="146" y2="57"/><line x1="90" y1="46" x2="146" y2="57"/><line x1="90" y1="68" x2="146" y2="57"/><line x1="90" y1="90" x2="146" y2="57"/>
+  </g>
+  <!-- input arrows -->
+  <g stroke="#5b8cff" stroke-width="1.4" opacity=".7"><line x1="10" y1="40" x2="23" y2="40"/><line x1="10" y1="58" x2="23" y2="58"/><line x1="10" y1="76" x2="23" y2="76"/></g>
+  <!-- nodes -->
+  <g filter="url(#gA)">
+    <circle cx="28" cy="40" r="4.6" fill="#5b8cff"/><circle cx="28" cy="58" r="4.6" fill="#5b8cff"/><circle cx="28" cy="76" r="4.6" fill="#5b8cff"/>
+    <circle cx="90" cy="24" r="4.6" fill="#34d399"/><circle cx="90" cy="46" r="4.6" fill="#34d399"/><circle cx="90" cy="68" r="4.6" fill="#34d399"/><circle cx="90" cy="90" r="4.6" fill="#34d399"/>
+    <circle cx="146" cy="57" r="6.2" fill="#22d3ee"/>
+  </g>
+  <!-- predictive distribution (uncertainty) -->
+  <path d="M158 92 Q160 92 162 84 Q170 46 178 46 Q186 46 194 84 Q196 92 198 92 L198 94 L158 94 Z" fill="#34d399" opacity=".22"/>
+  <path d="M158 92 Q160 92 162 84 Q170 46 178 46 Q186 46 194 84 Q196 92 198 92" fill="none" stroke="#34d399" stroke-width="1.6"/>
+  <line x1="178" y1="46" x2="178" y2="92" stroke="#7de8c0" stroke-width="1" stroke-dasharray="2 2"/>
+  <line x1="151" y1="57" x2="158" y2="80" stroke="#22d3ee" stroke-width="1.3" opacity=".7"/>
+  <text x="8" y="100" fill="#6b7186" font-family="monospace" font-size="11">x</text>
+  <text x="178" y="108" fill="#7de8c0" font-family="monospace" font-size="11" text-anchor="middle">ŷ ± σ</text>
+</svg>
