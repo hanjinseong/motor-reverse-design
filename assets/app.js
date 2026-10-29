@@ -110,6 +110,7 @@ $('#speeds').addEventListener('click',e=>{const btn=e.target.closest('button');i
 
 /* ============================================================== viz switch */
 function resetViz(agent){
+  stopCycles();
   ['design','generation','evaluation','campaign'].forEach(a=>{$('#viz-'+a).style.display=a===agent?'block':'none';});
   $('#vizBody').scrollTop=0;
   if(agent==='design')resetDesign();
@@ -139,13 +140,44 @@ function finishDesign(){$('#readybtn').classList.add('show');}
 
 /* ============================================================== GENERATION (generation 2 of the campaign) */
 const G=C.gens, G1=G[0], G2=G[1]||G[0];
-const MOVES=(C.prompts&&C.prompts.moves)||{};
-let moveTimer=null;
-function parentCard(tid,base){
-  const p=BY_T[tid];const d=document.createElement('div');d.className='pt'+(base?' base':'');
-  const iron=base?BASE.iron:(p?p.iron:null),tq=base?BASE.tq:(p?p.tq:null);
-  d.innerHTML=`<img class="thumb" src="${TH(tid)}" alt=""><b>${base?'baseline':esc(p?p.c:tid)}</b><span>${iron!=null?iron.toFixed(3)+' kW · '+tq.toFixed(0)+' Nm':''}</span>`;
-  return d;
+const EXS=(C.examples&&C.examples.explore)||[], XPS=(C.examples&&C.examples.exploit)||[];
+const exIdx={ex:0,xp:0};
+let cycleTimers=[];
+function stopCycles(){cycleTimers.forEach(clearInterval);cycleTimers=[];}
+/* keep the edit token and the WHERE / EDIT / ALSO lines; the preamble and KEEP line are the same in every direction */
+function shortDirection(txt){
+  const lines=txt.split('\n'),tok=(lines[0].match(/^\[[A-Z_]+\]/)||[''])[0];
+  return [tok].concat(lines.filter(l=>/^(WHERE|EDIT|ALSO):/.test(l)&&!/^ALSO:\s*none/.test(l))).join('\n');
+}
+function exCaption(ex){
+  const par=BY_T[ex.p],out=BY_T[ex.o];
+  const pc=`${t('ge.parent')} · <b>${par?esc(par.c):''}</b>`;
+  let oc=`${t(ex.arm==='to'?'ge.output':'ge.edited')} · <b>${out?esc(out.c):''}</b>`;
+  if(out&&out.ok&&out.pv)oc+=`<br>iron ${fp(pctOf(out.iron,out.pv[0]))} · torque ${fp(pctOf(out.tq,out.pv[1]))}${out.s?' <span class="ok">ε ✓</span>':''}`;
+  return [pc,oc];
+}
+function showExample(kind,i){
+  const list=kind==='ex'?EXS:XPS;if(!list.length)return;
+  const k=i%list.length,ex=list[k],[pc,oc]=exCaption(ex);
+  $('#'+kind+'P').src=TH(ex.p);$('#'+kind+'O').src=TH(ex.o);
+  $('#'+kind+'Pc').innerHTML=pc;$('#'+kind+'Oc').innerHTML=oc;
+  if(kind==='ex')$('#exTxt').innerHTML=`<b>${esc(ex.op)}</b> · ${esc(ex.text)}`;
+  else $('#xpTxt').innerHTML=`<span class="arm-tag ${ex.arm}">text gradient · ${ex.arm==='tr'?'transfer':'library'}</span>\n`+fmtDirection(shortDirection(ex.text));
+  $$('#'+kind+'Strip button').forEach((b,n)=>b.classList.toggle('on',n===k));
+}
+function buildStrip(kind){
+  const list=kind==='ex'?EXS:XPS,box=$('#'+kind+'Strip');box.innerHTML='';
+  list.forEach((ex,k)=>{
+    const b=document.createElement('button');b.type='button';
+    b.innerHTML=`<img src="${TH(ex.o)}" alt=""><em>${kind==='ex'?esc(ex.op):(ex.arm==='tr'?'TR':'LIB')}</em>`;
+    b.addEventListener('click',()=>{exIdx[kind]=k;showExample(kind,k);});
+    box.appendChild(b);
+  });
+}
+function startCycle(kind){
+  const list=kind==='ex'?EXS:XPS;if(!list.length)return;
+  showExample(kind,exIdx[kind]);
+  cycleTimers.push(setInterval(()=>{if(player.paused)return;exIdx[kind]=(exIdx[kind]+1)%list.length;showExample(kind,exIdx[kind]);},3400));
 }
 function buildPool(){
   const pool=$('#pool');pool.innerHTML='';
@@ -156,40 +188,21 @@ function buildPool(){
   });
 }
 function resetGen(){
-  ['g-parents','g-explore','g-exploit','g-pool'].forEach(id=>$('#'+id).classList.remove('on'));
-  $('#parents').innerHTML='';$('#parInfo').textContent='';
-  $('#moveText').textContent='—';
-  buildShares(G1.shares,G1.shares,false);
+  stopCycles();exIdx.ex=0;exIdx.xp=0;
+  ['g-explore','g-exploit','g-pool'].forEach(id=>$('#'+id).classList.remove('on'));
+  buildStrip('ex');buildStrip('xp');showExample('ex',0);showExample('xp',0);
+  $('#sharesLine').innerHTML='';
   $('#spLib').style.width='80%';$('#spTr').style.width='20%';$('#spLibN').textContent='library 80';$('#spTrN').textContent='transfer 20';
-  $('#dirText').innerHTML='';
   buildPool();
   ['psGen','psGate','psEmb','psKept'].forEach(id=>$('#'+id).textContent='0');$('#poolInfo').textContent='0 / 200';
   $('#genReady').classList.remove('show');
-  if(moveTimer){clearInterval(moveTimer);moveTimer=null;}
-}
-function buildShares(from,to,animate){
-  const box=$('#shares');box.innerHTML='';
-  const keys=Object.keys(to).sort((a,b)=>to[b]-to[a]).slice(0,8);
-  keys.forEach(k=>{
-    const r=document.createElement('div');r.className='sh';
-    r.innerHTML=`<span>${k}</span><div class="bar"><i style="width:${(from[k]||0)*300}%"></i><u style="left:${(from[k]||0)*300}%"></u></div><span class="v">${((from[k]||0)*100).toFixed(1)} %</span>`;
-    box.appendChild(r);
-    if(animate)after(80,()=>{r.querySelector('i').style.width=(to[k]*300)+'%';r.querySelector('u').style.left=((from[k]||0)*300)+'%';r.querySelector('.v').textContent=(to[k]*100).toFixed(1)+' %';});
-  });
-}
-function genParents(){
-  $('#g-parents').classList.add('on');
-  const box=$('#parents');box.innerHTML='';
-  G2.parents.forEach((tid,i)=>{const d=parentCard(tid,false);box.appendChild(d);after(120+i*140,()=>d.classList.add('show'));});
-  $('#parInfo').textContent=`archive ${C.points.filter(p=>p.ok&&p.it<G2.it).length+1} · front ${G2.parents.length} · NSGA-II`;
 }
 function genExplore(){
   $('#g-explore').classList.add('on');
-  buildShares(G1.shares,G2.shares,true);
-  const keys=Object.keys(G2.shares).sort((a,b)=>G2.shares[b]-G2.shares[a]).filter(k=>MOVES[k]).slice(0,8);
-  let i=0;const show=()=>{const k=keys[i%keys.length];$('#moveText').innerHTML=`<b style="color:#6ee7b7">${k}</b> · ${esc(MOVES[k])}`;i++;};
-  if(keys.length){show();moveTimer=setInterval(()=>{if(!player.paused)show();},2600);}
-  else $('#moveText').textContent=(C.prompts.explore||'').slice(-220);
+  $$('#exStrip button').forEach((b,i)=>after(80+i*90,()=>b.classList.add('in')));
+  startCycle('ex');
+  const sh=G2.shares;
+  $('#sharesLine').innerHTML=`<span>${t('ge.ex.shares')}</span>`+Object.keys(sh).sort((a,b)=>sh[b]-sh[a]).slice(0,6).map(k=>`<span><b>${k}</b> ${(sh[k]*100).toFixed(1)} %</span>`).join('');
 }
 function fmtDirection(txt){
   return esc(txt).replace(/^\[([A-Z_]+)\]/,'<span class="tk">[$1]</span>').replace(/\n(WHERE|EDIT|ALSO|KEEP):/g,'\n<span class="kw">$1:</span>');
@@ -202,7 +215,8 @@ function genExploit(){
   $('#g-exploit').classList.add('on');
   const lib=G2.exploit_n.library||90,tr=G2.exploit_n.transfer||10;
   after(100,()=>{$('#spLib').style.width=lib+'%';$('#spTr').style.width=tr+'%';$('#spLibN').textContent='library '+lib;$('#spTrN').textContent='transfer '+tr;});
-  typeInto($('#dirText'),fmtDirection(C.prompts.transfer||C.prompts.library||''),2600);
+  $$('#xpStrip button').forEach((b,i)=>after(80+i*90,()=>b.classList.add('in')));
+  startCycle('xp');
 }
 function genPool(){
   $('#g-pool').classList.add('on');
@@ -437,7 +451,7 @@ const SCENES={
     {who:'agent',key:'de.s9',after:finishDesign},
   ],
   generation:[
-    {who:'agent',key:'ge.s2',after:genParents},
+    {who:'agent',key:'ge.s2'},
     {who:'agent',key:'ge.s3',after:genExplore},
     {who:'agent',key:'ge.s4',after:genExploit},
     {who:'agent',key:'ge.s5',after:()=>{genPool();after(2600,genGate);},dur:4200},
@@ -467,7 +481,7 @@ const SCENES={
 /* ============================================================== navigation */
 function setView(view,agent){
   $$('.view').forEach(v=>v.classList.remove('active'));
-  if(view==='overview'){$('#view-overview').classList.add('active');applyTopbar('overview');player.token++;player.agent=null;if(moveTimer){clearInterval(moveTimer);moveTimer=null;}}
+  if(view==='overview'){$('#view-overview').classList.add('active');applyTopbar('overview');player.token++;player.agent=null;stopCycles();}
   else{$('#view-agent').classList.add('active');applyTopbar(agent);playAgent(agent);}
 }
 $('#nav').addEventListener('click',e=>{
