@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=9">
 </head>
 <body>
 <div class="app">
@@ -257,24 +257,57 @@
                   <div class="gcard arm-ex" id="g-explore">
                     <div class="gh agent-h"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration agent</span><span class="gh-r">zero-shot T2I</span></div>
                     <p class="arm-sub" data-i18n="ge.ex.sub">Generates diverse new topologies</p>
+                    <div class="prompt">
+                      <div class="p-lab" data-i18n="ge.ex.role">Role prompt</div>
+                      <div class="p-role" id="exRole"></div>
+                      <div class="p-lab"><span data-i18n="ge.ex.move">Topology move</span> <b class="p-op" id="exOp"></b></div>
+                      <div class="p-move" id="exMove"></div>
+                    </div>
                     <div class="gal-grid" id="exGrid"></div>
                   </div>
                   <div class="gcard arm-xp" id="g-exploit">
                     <div class="gh agent-h"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation agent</span><span class="gh-r">fine-tuned T2I</span></div>
                     <p class="arm-sub" data-i18n="ge.xp.sub">Refines designs along a text gradient</p>
+                    <div class="prompt">
+                      <div class="p-lab"><span>Text gradient</span> · <b class="p-op" id="xpArm"></b></div>
+                      <pre class="p-grad" id="xpGrad"></pre>
+                    </div>
                     <div class="gal-grid" id="xpGrid"></div>
                   </div>
                 </div>
                 <div class="gcard" id="g-pool">
-                  <div class="gh agent-h"><span class="k">C</span><span data-i18n="ge.pool.h">Candidate pool → feasibility gate → N11 embedding → FPS filter</span><span class="gh-r" id="poolInfo">0 / 200</span></div>
-                  <div class="pool" id="pool"></div>
-                  <div class="pool-leg">
-                    <i style="--c:#6ee7b7" data-i18n="ge.leg.ex">exploration</i>
-                    <i style="--c:#ffce86" data-i18n="ge.leg.li">library edit</i>
-                    <i style="--c:#fb6f84" data-i18n="ge.leg.tr">transfer edit</i>
-                    <i style="--c:#34d399" data-i18n="ge.leg.kept">kept by FPS</i>
-                    <i style="--c:#22d3ee" data-i18n="ge.leg.forced">predicted front (forced in)</i>
+                  <div class="gh agent-h"><span class="k">C</span><span data-i18n="ge.pool.h">Filtering agent</span><span class="gh-r">VLM-ensemble embedding · FPS</span></div>
+                  <p class="arm-sub" data-i18n="ge.pool.sub">Keeps a diverse set in a multi-modal embedding space</p>
+                  <div class="filt">
+                    <div class="pipe" id="embPipe">
+                      <div class="p-lab" data-i18n="ge.emb.h">Multi-modal embedding</div>
+                      <div class="pp-row">
+                        <figure class="pp-cand"><img src="assets/d/i02c004.png" alt="candidate design"><figcaption data-i18n="ge.emb.cand">candidate</figcaption></figure>
+                        <span class="pp-arr">→</span>
+                        <div class="pp-views">
+                          <figure><img src="assets/emb/full.png" alt="full view"><figcaption data-i18n="ge.emb.full">full</figcaption></figure>
+                          <figure><img src="assets/emb/pm.png" alt="magnet-only view"><figcaption data-i18n="ge.emb.pm">magnet</figcaption></figure>
+                          <figure><img src="assets/emb/void.png" alt="void-only view"><figcaption data-i18n="ge.emb.void">void</figcaption></figure>
+                        </div>
+                      </div>
+                      <div class="pp-down">↓</div>
+                      <div class="pp-vlm"><b>Qwen3-VL-Embedding-2B</b> <span data-i18n="ge.emb.vlm">× 3 views, one instruction</span><div class="p-instr" id="embInstr"></div></div>
+                      <div class="pp-down">↓</div>
+                      <div class="pp-vec"><span>3 × 2,048</span><span class="pp-arr">→</span><b>6,144-d</b> <span data-i18n="ge.emb.vec">embedding</span></div>
+                    </div>
+                    <div class="space">
+                      <div class="p-lab"><span data-i18n="ge.space">Embedding space · t-SNE</span><span class="sp-info" id="poolInfo">0 / 196</span></div>
+                      <svg id="embSvg" viewBox="0 0 400 300"></svg>
+                      <div class="legend">
+                        <i><b style="background:#6ee7b7"></b><span data-i18n="ge.leg.ex">exploration</span></i>
+                        <i><b style="background:#ffce86"></b><span data-i18n="ge.leg.li">library edit</span></i>
+                        <i><b style="background:#fb6f84"></b><span data-i18n="ge.leg.tr">transfer edit</span></i>
+                        <i><b style="background:transparent;border:1.6px solid #fff"></b><span data-i18n="ge.leg.kept">kept by FPS</span></i>
+                        <i><b style="background:transparent;border:1.6px solid #22d3ee"></b><span data-i18n="ge.leg.forced">predicted front (forced in)</span></i>
+                      </div>
+                    </div>
                   </div>
+                  <div class="pool" id="pool"></div>
                   <div class="pool-stats">
                     <div class="ps"><span data-i18n="ge.ps.gen">generated</span><b id="psGen">0</b></div>
                     <div class="ps red"><span data-i18n="ge.ps.gate">gate dropped</span><b id="psGate">0</b></div>
@@ -388,8 +421,8 @@
 </div>
 <div class="tip" id="tip"></div>
 
-<script src="assets/data.js?v=4"></script>
-<script src="assets/i18n.js?v=7"></script>
-<script src="assets/app.js?v=7"></script>
+<script src="assets/data.js?v=5"></script>
+<script src="assets/i18n.js?v=8"></script>
+<script src="assets/app.js?v=8"></script>
 </body>
 </html>

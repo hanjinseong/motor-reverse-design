@@ -295,13 +295,44 @@ img{user-select:none}
 .tile.forced{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(34,211,238,.4)}
 .tile.dim{opacity:.22}
 .pool-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:6px 14px 12px}
-.gh.agent-h{padding:12px 16px;font-size:14.5px;font-weight:800;color:#fff;text-transform:none;letter-spacing:0}
-.gh.agent-h .k{width:24px;height:24px;font-size:12px}
-.gh.agent-h .gh-r{font-size:13px;font-weight:700;color:#e6e9f2}
-.arm-sub{margin:0;padding:13px 16px 2px;font-size:14px;font-weight:700;line-height:1.5;color:#e6e9f2}
-.gal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:12px 16px 16px}
+.gh.agent-h{padding:13px 18px;font-size:18px;font-weight:800;color:#fff;text-transform:none;letter-spacing:-.01em}
+.gh.agent-h .k{width:28px;height:28px;font-size:13.5px}
+.gh.agent-h .gh-r{font-size:14px;font-weight:700;color:#e6e9f2;letter-spacing:0}
+.arm-sub{margin:0;padding:14px 18px 4px;font-size:15.5px;font-weight:800;line-height:1.45;color:#fff}
+.gal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:12px 18px 18px}
 .gal-grid img{display:block;width:100%;aspect-ratio:1;object-fit:cover;image-rendering:pixelated;border-radius:7px;background:#000;opacity:0;transform:scale(.7);transition:opacity .35s,transform .35s}
 .gal-grid img.in{opacity:1;transform:none}
+.gal-grid img{cursor:pointer;outline:2px solid transparent;outline-offset:1px}
+.gal-grid img.cur{outline-color:#6ee7b7}
+.arm-xp .gal-grid img.cur{outline-color:#ffce86}
+.prompt{margin:10px 18px 0;padding:11px 13px;border:1px solid var(--border2);border-radius:11px;background:rgba(0,0,0,.32)}
+.p-lab{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9aa0b8}
+.p-lab .p-op{color:#6ee7b7;letter-spacing:0}
+.arm-xp .p-lab .p-op{color:#ffce86;text-transform:none}
+.p-role{max-height:88px;overflow:auto;margin-bottom:10px;padding-right:4px;font-size:12.5px;line-height:1.55;color:#c8cee0}
+.p-move{min-height:44px;font-size:14px;line-height:1.5;color:#fff}
+.p-grad{margin:0;min-height:120px;white-space:pre-wrap;font-family:var(--mono);font-size:13px;line-height:1.55;color:#e6e9f2}
+.p-grad .tk{color:#6ee7b7;font-weight:800}
+.p-grad .kw{color:#ffce86;font-weight:800}
+.filt{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;padding:12px 18px 6px}
+.pipe,.space{border:1px solid var(--border);border-radius:11px;background:rgba(0,0,0,.22);padding:11px 13px}
+.pp-row{display:flex;align-items:center;gap:8px}
+.pp-row figure{margin:0;text-align:center}
+.pp-row img{display:block;width:100%;aspect-ratio:1;object-fit:cover;image-rendering:pixelated;border-radius:6px;border:1px solid var(--border2);background:#000}
+.pp-row figcaption{margin-top:4px;font-size:12px;color:#c8cee0}
+.pp-cand{width:74px;flex:none}
+.pp-views{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pp-arr{color:#7de8f8;font-weight:800;font-size:16px}
+.pp-down{text-align:center;color:#7de8f8;font-weight:800;line-height:1.4}
+.pp-vlm{padding:9px 11px;border:1px solid rgba(34,211,238,.4);border-radius:9px;background:rgba(34,211,238,.07);font-size:13px;color:#e6e9f2}
+.pp-vlm b{color:#7de8f8}
+.p-instr{margin-top:6px;font-size:12.5px;line-height:1.5;color:#c8cee0;font-style:italic}
+.pp-vec{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;border:1px solid var(--border2);border-radius:9px;font-size:13.5px;color:#e6e9f2}
+.pp-vec b{color:#fff;font-size:15px}
+.space .p-lab{justify-content:space-between}
+.sp-info{color:#e6e9f2;letter-spacing:0}
+#embSvg{display:block;width:100%;height:auto;transition:opacity .5s}
+.space .legend{padding:8px 2px 2px;border-top:0;font-size:12px}
 .ps{border:1px solid var(--border);background:rgba(255,255,255,.03);border-radius:9px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center}
 .ps span{font-size:12px;color:var(--muted)}
 .ps b{font-family:var(--mono);font-size:16px}
@@ -390,3 +421,5 @@ img{user-select:none}
   .pool{grid-template-columns:repeat(5,1fr)}
   .dims{grid-template-columns:1fr}
 }
+.arms .gcard{display:flex;flex-direction:column}
+.arms .prompt{flex:1}

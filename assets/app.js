@@ -14,6 +14,7 @@ const fp=(x,d=1)=>(x>0?'+':x<0?'−':'')+Math.abs(x).toFixed(d)+' %';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const BY_T={};C.points.forEach(p=>{BY_T[p.t]=p;});
 const BASE=C.baseline;
+const tip=document.getElementById('tip');
 
 /* ============================================================== i18n */
 let lang=(()=>{try{return localStorage.getItem('motorai-rd-lang')||'en';}catch(e){return 'en';}})();
@@ -110,6 +111,7 @@ $('#speeds').addEventListener('click',e=>{const btn=e.target.closest('button');i
 
 /* ============================================================== viz switch */
 function resetViz(agent){
+  stopGal();
   ['design','generation','evaluation','campaign'].forEach(a=>{$('#viz-'+a).style.display=a===agent?'block':'none';});
   $('#vizBody').scrollTop=0;
   if(agent==='design')resetDesign();
@@ -140,11 +142,50 @@ function finishDesign(){$('#readybtn').classList.add('show');}
 /* ============================================================== GENERATION (generation 2 of the campaign) */
 const G=C.gens, G1=G[0], G2=G[1]||G[0];
 const GAL=C.gallery||{explore:[],exploit:[]};
-function buildGallery(id,list){
-  const box=$('#'+id);box.innerHTML='';
-  list.forEach(x=>{const im=document.createElement('img');im.src=TH(x.t);im.alt='';im.title=`gen ${x.it}${x.op?' · '+x.op:''}`;box.appendChild(im);});
+const galIdx={ex:0,xp:0};
+let galTimers=[];
+function stopGal(){galTimers.forEach(clearInterval);galTimers=[];}
+/* keep the edit token and the WHERE / EDIT / ALSO lines; the preamble and KEEP line are the same in every gradient */
+function shortDirection(txt){
+  const lines=txt.split('\n'),tok=(lines[0].match(/^\[[A-Z_]+\]/)||[''])[0];
+  return [tok].concat(lines.filter(l=>/^(WHERE|EDIT|ALSO):/.test(l)&&!/^ALSO:\s*none/.test(l))).join('\n');
 }
-function revealGallery(id){$$('#'+id+' img').forEach((im,i)=>after(60+i*55,()=>im.classList.add('in')));}
+function galList(kind){return kind==='ex'?GAL.explore:GAL.exploit;}
+function showGal(kind,i){
+  const list=galList(kind);if(!list.length)return;
+  const k=i%list.length,x=list[k];
+  $$('#'+kind+'Grid img').forEach((im,n)=>im.classList.toggle('cur',n===k));
+  if(kind==='ex'){$('#exOp').textContent=x.op;$('#exMove').textContent=x.txt||'';}
+  else{$('#xpArm').textContent=x.arm==='tr'?'transfer':'library';$('#xpGrad').innerHTML=fmtDirection(shortDirection(x.txt||''));}
+}
+function buildGallery(kind){
+  const box=$('#'+kind+'Grid');box.innerHTML='';
+  galList(kind).forEach((x,k)=>{
+    const im=document.createElement('img');im.src=TH(x.t);im.alt='';im.title=`gen ${x.it}${x.op?' · '+x.op:''}`;
+    im.addEventListener('click',()=>{galIdx[kind]=k;showGal(kind,k);});
+    box.appendChild(im);
+  });
+}
+function revealGallery(kind){$$('#'+kind+'Grid img').forEach((im,i)=>after(60+i*55,()=>im.classList.add('in')));}
+function startGal(kind){
+  const list=galList(kind);if(!list.length)return;
+  showGal(kind,galIdx[kind]);
+  galTimers.push(setInterval(()=>{if(player.paused)return;galIdx[kind]=(galIdx[kind]+1)%list.length;showGal(kind,galIdx[kind]);},3200));
+}
+/* embedding space: t-SNE of the generation-2 N11 vectors, FPS picks drawn in pick order */
+const EMB=C.emb||{pts:[]};
+const EW=400,EH=300,EPD=16;
+const ex_=v=>EPD+v*(EW-2*EPD), ey_=v=>EPD+(1-v)*(EH-2*EPD);
+const ACOL={to:'#6ee7b7',li:'#ffce86',tr:'#fb6f84'};
+function drawEmb(show,pick){
+  const s=[];
+  if(show)EMB.pts.forEach(p=>{
+    const picked=p.kept&&(p.o||60)<=pick;
+    s.push(`<circle class="ep" data-t="${p.t}" cx="${ex_(p.x).toFixed(1)}" cy="${ey_(p.y).toFixed(1)}" r="${picked?4.4:3.6}" fill="${ACOL[p.arm]||'#9aa0b8'}" opacity="${pick?(picked?1:.3):.9}"/>`);
+  });
+  if(pick)EMB.pts.filter(p=>p.kept&&(p.o||60)<=pick).forEach(p=>s.push(`<circle cx="${ex_(p.x).toFixed(1)}" cy="${ey_(p.y).toFixed(1)}" r="7.2" fill="none" stroke="${p.forced?'#22d3ee':'#fff'}" stroke-width="1.6" pointer-events="none"/>`));
+  $('#embSvg').innerHTML=s.join('');
+}
 function buildPool(){
   const pool=$('#pool');pool.innerHTML='';
   C.grid.forEach(g=>{
@@ -154,13 +195,17 @@ function buildPool(){
   });
 }
 function resetGen(){
+  stopGal();galIdx.ex=0;galIdx.xp=0;
   ['g-explore','g-exploit','g-pool'].forEach(id=>$('#'+id).classList.remove('on'));
-  buildGallery('exGrid',GAL.explore);buildGallery('xpGrid',GAL.exploit);
+  buildGallery('ex');buildGallery('xp');showGal('ex',0);showGal('xp',0);
+  $('#exRole').textContent=C.role||'';
+  $('#embInstr').textContent='“'+(EMB.instruction||'')+'”';
+  drawEmb(false,0);
   buildPool();
-  ['psGen','psGate','psEmb','psKept'].forEach(id=>$('#'+id).textContent='0');$('#poolInfo').textContent='0 / 200';
+  ['psGen','psGate','psEmb','psKept'].forEach(id=>$('#'+id).textContent='0');$('#poolInfo').textContent='0 / '+(EMB.n||196);
   $('#genReady').classList.remove('show');
 }
-function genExplore(){$('#g-explore').classList.add('on');revealGallery('exGrid');}
+function genExplore(){$('#g-explore').classList.add('on');revealGallery('ex');startGal('ex');}
 function fmtDirection(txt){
   return esc(txt).replace(/^\[([A-Z_]+)\]/,'<span class="tk">[$1]</span>').replace(/\n(WHERE|EDIT|ALSO|KEEP):/g,'\n<span class="kw">$1:</span>');
 }
@@ -168,13 +213,12 @@ function typeInto(el,html,ms){
   const tmp=document.createElement('div');tmp.innerHTML=html;const full=tmp.textContent;
   tween(ms,k=>{if(k<1)el.textContent=full.slice(0,Math.floor(full.length*k));else el.innerHTML=html;});
 }
-function genExploit(){$('#g-exploit').classList.add('on');revealGallery('xpGrid');}
+function genExploit(){$('#g-exploit').classList.add('on');revealGallery('xp');startGal('xp');}
 function genPool(){
   $('#g-pool').classList.add('on');
   const tiles=$$('#pool .tile');
   tiles.forEach((d,i)=>after(60+i*55,()=>d.classList.add('in')));
   animNum($('#psGen'),0,G2.generated+G2.gate_dropped,60+tiles.length*55);
-  after(60+tiles.length*55,()=>{$('#poolInfo').textContent=`${G2.generated+G2.gate_dropped} / 200`;});
 }
 function genGate(){
   const tiles=$$('#pool .tile');
@@ -185,12 +229,13 @@ function genEmbed(){
   const tiles=$$('#pool .tile');
   C.grid.forEach((g,i)=>{if(!g.gated)after(80+i*40,()=>tiles[i].classList.add('emb'));});
   animNum($('#psEmb'),0,G2.generated,1800);
+  $('#embSvg').style.opacity=0;drawEmb(true,0);requestAnimationFrame(()=>$('#embSvg').style.opacity=1);
 }
 function genFilter(){
   const tiles=$$('#pool .tile');
   after(300,()=>{C.grid.forEach((g,i)=>{if(g.gated)return;if(g.kept){after(i*45,()=>{tiles[i].classList.remove('emb');tiles[i].classList.add('kept');if(g.forced)tiles[i].classList.add('forced');});}else after(i*45,()=>{tiles[i].classList.remove('emb');tiles[i].classList.add('dim');});});});
   after(600,()=>animNum($('#psKept'),0,G2.kept,1200));
-  after(1900,()=>{$('#poolInfo').textContent=`${G2.kept} / ${G2.generated}`;});
+  tween(2600,k=>{const n=Math.ceil(k*G2.kept);drawEmb(true,n);$('#poolInfo').textContent=`${n} / ${EMB.n||G2.generated}`;});
 }
 function finishGen(){$('#genReady').classList.add('show');}
 
@@ -378,8 +423,15 @@ function gaFinal(){
   });
   requestAnimationFrame(()=>$$('#paretoSvg .callout').forEach(g=>g.style.opacity=1));
 }
+/* tooltip for the embedding map */
+$('#embSvg').addEventListener('mousemove',e=>{
+  const c=e.target.closest('circle.ep');if(!c){tip.classList.remove('show');return;}
+  const p=EMB.pts.find(q=>q.t===c.dataset.t);if(!p)return;
+  tip.innerHTML=`<img src="${TH(p.t)}" alt=""><b>${p.arm==='to'?'exploration':p.arm==='tr'?'transfer':'library'}</b>${p.kept?' · FPS pick #'+(p.o||'—'):''}${p.forced?' · predicted front':''}`;
+  tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';tip.classList.add('show');
+});
+$('#embSvg').addEventListener('mouseleave',()=>tip.classList.remove('show'));
 /* tooltip for FEA points */
-const tip=$('#tip');
 $('#paretoSvg').addEventListener('mousemove',e=>{
   const c=e.target.closest('circle.pp');if(!c){tip.classList.remove('show');return;}
   const p=BY_T[c.dataset.t];if(!p)return;
@@ -432,7 +484,7 @@ const SCENES={
 /* ============================================================== navigation */
 function setView(view,agent){
   $$('.view').forEach(v=>v.classList.remove('active'));
-  if(view==='overview'){$('#view-overview').classList.add('active');applyTopbar('overview');player.token++;player.agent=null;}
+  if(view==='overview'){$('#view-overview').classList.add('active');applyTopbar('overview');player.token++;player.agent=null;stopGal();}
   else{$('#view-agent').classList.add('active');applyTopbar(agent);playAgent(agent);}
 }
 $('#nav').addEventListener('click',e=>{
