@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=115a">
+<link rel="stylesheet" href="assets/style.css?v=116">
 </head>
 <body>
 <div class="app">
@@ -324,11 +324,11 @@
               <div class="ev-wrap">
                 <div class="gcard" id="e-cad">
                   <div class="gh"><span class="k">1</span><span data-i18n="ev.cad.h">Image → CAD</span><span class="gh-r" id="cadInfo">PM_1038 · generation 1</span></div>
-                  <div class="cs-row"><div class="cs " data-s="0"><div class="cs-fig"><img class="px" src="assets/d/i01c145.png" alt=""></div><b data-i18n="ev.c1.t">RGB image</b><span data-i18n="ev.c1.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="1"><div class="cs-fig"><img src="assets/cad/binary.png" alt=""></div><b data-i18n="ev.c2.t">Binary</b><span data-i18n="ev.c2.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="2"><div class="cs-fig"><img src="assets/cad/sdf.png" alt=""></div><b data-i18n="ev.c3.t">Signed distance field</b><span data-i18n="ev.c3.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="3"><div class="cs-fig"><svg id="cadEdges"></svg></div><b data-i18n="ev.c4.t">Lines & fillets</b><span data-i18n="ev.c4.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="4"><div class="cs-fig"><svg id="cadStep"></svg></div><b data-i18n="ev.c5.t">STEP</b><span data-i18n="ev.c5.c"></span></div></div>
+                  <div class="cs-row"><div class="cs " data-s="0"><div class="cs-fig"><img class="px" src="assets/d/i01c145.png" alt=""></div><b data-i18n="ev.c1.t">RGB image</b></div><span class="cs-arr">→</span><div class="cs " data-s="1"><div class="cs-fig"><img src="assets/cad/binary.png" alt=""></div><b data-i18n="ev.c2.t">Binary</b></div><span class="cs-arr">→</span><div class="cs " data-s="2"><div class="cs-fig"><img src="assets/cad/sdf.png" alt=""></div><b data-i18n="ev.c3.t">Signed distance field</b></div><span class="cs-arr">→</span><div class="cs " data-s="3"><div class="cs-fig"><svg id="cadEdges"></svg></div><b data-i18n="ev.c4.t">Lines & fillets</b></div><span class="cs-arr">→</span><div class="cs " data-s="4"><div class="cs-fig"><svg id="cadStep"></svg></div><b data-i18n="ev.c5.t">STEP</b></div></div>
                 </div>
                 <div class="gcard" id="e-fea">
                   <div class="gh"><span class="k">2</span><span data-i18n="ev.fea.h">CAD → FEA</span><span class="gh-r">Maxwell 2D</span></div>
-                  <div class="cs-row cs-row4"><div class="cs " data-s="5"><div class="cs-fig"><svg id="feaAlign"></svg></div><b data-i18n="ev.f1.t">Coordinate alignment</b><span data-i18n="ev.f1.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="6"><div class="cs-fig"><svg id="feaMag"></svg></div><b data-i18n="ev.f2.t">Magnetization</b><span data-i18n="ev.f2.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="7"><div class="cs-fig"><svg id="feaMotor"></svg></div><b data-i18n="ev.f3.t">FEA model</b><span data-i18n="ev.f3.c"></span></div><span class="cs-arr">→</span><div class="cs " data-s="8"><div class="cs-fig"><div class="solve"><div class="sv-num"><b id="svIron">—</b><span>kW iron loss</span></div><div class="sv-num"><b id="svTq">—</b><span>Nm torque</span></div><svg id="svWave" viewBox="0 0 200 70" preserveAspectRatio="none"></svg></div></div><b data-i18n="ev.f4.t">Maxwell 2D solve</b><span data-i18n="ev.f4.c"></span></div></div>
+                  <div class="cs-row cs-row4"><div class="cs " data-s="5"><div class="cs-fig"><svg id="feaAlign"></svg></div><b data-i18n="ev.f1.t">Coordinate alignment</b></div><span class="cs-arr">→</span><div class="cs " data-s="6"><div class="cs-fig"><svg id="feaMag"></svg></div><b data-i18n="ev.f2.t">Magnetization</b></div><span class="cs-arr">→</span><div class="cs " data-s="7"><div class="cs-fig"><svg id="feaMotor"></svg></div><b data-i18n="ev.f3.t">FEA model</b></div><span class="cs-arr">→</span><div class="cs " data-s="8"><div class="cs-fig"><div class="solve"><div class="sv-num"><b id="svIron">—</b><span>kW iron loss</span></div><div class="sv-num"><b id="svTq">—</b><span>Nm torque</span></div><svg id="svWave" viewBox="0 0 200 70" preserveAspectRatio="none"></svg></div></div><b data-i18n="ev.f4.t">Maxwell 2D solve</b></div></div>
                 </div>
                 <div class="gcard" id="e-hyb">
                   <div class="gh"><span class="k">3</span><span data-i18n="ev.hyb.h">FEA-AI hybrid model</span><span class="gh-r" data-i18n="ev.hyb.r">uncertainty-aware switching</span></div>
@@ -411,7 +411,7 @@
 <div class="tip" id="tip"></div>
 
 <script src="assets/data.js?v=6"></script>
-<script src="assets/i18n.js?v=13a"></script>
-<script src="assets/app.js?v=13a"></script>
+<script src="assets/i18n.js?v=14"></script>
+<script src="assets/app.js?v=14"></script>
 </body>
 </html>

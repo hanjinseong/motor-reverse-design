@@ -350,7 +350,7 @@ function drawSig(){
   const X=v=>20+(v-SIG_LO)/(SIG_HI-SIG_LO)*560;let s='';
   for(const v of [100,110,120,130,140,150])s+=`<line x1="${X(v)}" y1="12" x2="${X(v)}" y2="66" stroke="rgba(255,255,255,.06)"/><text x="${X(v)}" y="84" fill="#9aa0b8" font-size="12" text-anchor="middle">${v} W</text>`;
   const shown=HY.round>=0;
-  R.sig.forEach((v,i)=>{const y=22+((i*37)%40);const f=v>=HY.tau;s+=`<circle cx="${X(v).toFixed(1)}" cy="${y}" r="5" fill="${shown?(f?'#f5a524':'#34d399'):'#646a86'}" opacity=".9"/>`;});
+  R.sig.forEach((v,i)=>{const y=22+((i*37)%40);const f=v>=HY.tau;s+=`<circle cx="${X(v).toFixed(1)}" cy="${y}" r="3.3" fill="${shown?(f?'#f5a524':'#34d399'):'#646a86'}" opacity=".9"/>`;});
   s+=`<line x1="${X(HY.tau)}" y1="6" x2="${X(HY.tau)}" y2="70" stroke="#c9b6ff" stroke-width="2.2"/><text x="${X(HY.tau)+6}" y="16" fill="#c9b6ff" font-size="12.5" font-weight="800">τ</text>`;
   s+=`<text x="${X(SIG_LO)}" y="8" fill="#6ee7b7" font-size="12" font-weight="800">AI ←</text><text x="${X(SIG_HI)}" y="8" fill="#ffce86" font-size="12" font-weight="800" text-anchor="end">→ FEA</text>`;
   $('#sigSvg').innerHTML=s;
