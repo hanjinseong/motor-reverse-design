@@ -404,48 +404,74 @@ function evRound2(){hybRound(1);}
 function evDone(){after(1500,()=>$('#evReady').classList.add('show'));}
 let rzT;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(player.agent==='evaluation')hybPlace();},150);});
 /* ============================================================== CAMPAIGN */
-const GA={W:820,H:360,pl:58,pr:18,pt:18,pb:40,x0:0.6,x1:1.8,y0:40,y1:360};
+/* Pareto chart in % vs the reference design; the plot window IS the hypervolume box (iron <= +20 %, torque >= -20 %),
+   so the shaded staircase = the hypervolume, as in the KSME animation */
+const GA={W:820,H:400,pl:62,pr:20,pt:16,pb:46,x0:-30,x1:20,y0:-20,y1:22};
 const gx=v=>GA.pl+(v-GA.x0)/(GA.x1-GA.x0)*(GA.W-GA.pl-GA.pr);
 const gy=v=>GA.H-GA.pb-(v-GA.y0)/(GA.y1-GA.y0)*(GA.H-GA.pt-GA.pb);
 const HVREF=[BASE.iron*C.hv_ref[0],BASE.tq*C.hv_ref[1]];
 const inBox=p=>p.iron<=HVREF[0]&&p.tq>=HVREF[1];
+const px_=p=>pctOf(p.iron,BASE.iron), py_=p=>pctOf(p.tq,BASE.tq);
+const BAND=['#102727','#133431','#16443b','#1a5646','#1e6953'];   /* hypervolume gained per generation, darker -> brighter */
 let gaK=0;
 function okUpTo(k){return C.points.filter(p=>p.ok&&p.it<=k);}
 function frontOf(pts){
   const b=pts.filter(inBox).sort((a,c)=>a.iron-c.iron);const f=[];let best=-1;
   b.forEach(p=>{if(p.tq>best){f.push(p);best=p.tq;}});return f;
 }
+/* dominated region of a front: union of [x, right edge] x [bottom edge, y] */
+function regionPath(f){
+  if(!f.length)return '';
+  const X1=gx(GA.x1),Y0=gy(GA.y0);let d=`M${gx(px_(f[0])).toFixed(1)} ${Y0}`;
+  f.forEach((p,i)=>{const X=gx(px_(p)),Y=gy(py_(p));if(i)d+=` H${X.toFixed(1)}`;d+=` V${Y.toFixed(1)}`;});
+  return d+` H${X1} V${Y0} Z`;
+}
+function stairPath(f){
+  if(!f.length)return '';
+  let d='';f.forEach((p,i)=>{const X=gx(px_(p)),Y=gy(py_(p));d+=i?` H${X.toFixed(1)} V${Y.toFixed(1)}`:`M${X.toFixed(1)} ${gy(GA.y0)} V${Y.toFixed(1)}`;});
+  return d+` H${gx(GA.x1)}`;
+}
+function genFront(k){return k>0?frontOf(okUpTo(k)):[];}
 function resetGA(){
   gaK=0;
   const gens=$('#gens');gens.innerHTML='';
-  G.forEach((g,i)=>{const d=document.createElement('div');d.className='gp';d.style.setProperty('--c',GENCOL[i]);d.innerHTML=`<b>${t('ga.gen')} ${g.it}</b><em>HV ${g.hv.toFixed(2)}</em><span>ε ${g.succ} · front ${g.front_size}</span>`;gens.appendChild(d);});
-  drawPareto(0,false);drawHV(0);$('#gallery').innerHTML='';$('#galInfo').textContent='';$('#armbars').innerHTML='';
-  ['kFea','kSucc','kFront','kHV'].forEach(id=>$('#'+id).textContent='—');$('#parStat').textContent='';$('#hvStat').textContent='';
+  G.forEach((g,i)=>{const d=document.createElement('div');d.className='gp';d.style.setProperty('--c',GENCOL[i]);d.innerHTML=`<b>${t('ga.gen')} ${g.it}</b><em>HV ${g.hv.toFixed(2)}</em><span>ε ${g.succ} · front ${genFront(i+1).length}</span>`;gens.appendChild(d);});
+  drawPareto(0,[],1);drawHV(0);$('#gallery').innerHTML='';$('#galInfo').textContent='';$('#armbars').innerHTML='';
+  ['kFea','kSucc','kFront','kHV'].forEach(id=>$('#'+id).textContent='—');$('#hvStat').textContent='';
 }
-function drawPareto(k,pop){
+/* k = generation shown, pts = designs drawn, aNew = 0..1 reveal of generation k's region and front */
+function drawPareto(k,pts,aNew){
   const s=[];const x0=gx(GA.x0),x1=gx(GA.x1),y0=gy(GA.y0),y1=gy(GA.y1);
-  for(const v of [0.8,1.0,1.2,1.4,1.6])s.push(`<line x1="${gx(v)}" y1="${y1}" x2="${gx(v)}" y2="${y0}" stroke="rgba(255,255,255,.05)"/><text x="${gx(v)}" y="${y0+15}" fill="#646a86" font-size="11" text-anchor="middle">${v.toFixed(1)}</text>`);
-  for(const v of [100,150,200,250,300,350])s.push(`<line x1="${x0}" y1="${gy(v)}" x2="${x1}" y2="${gy(v)}" stroke="rgba(255,255,255,.05)"/><text x="${x0-7}" y="${gy(v)+4}" fill="#646a86" font-size="11" text-anchor="end">${v}</text>`);
-  s.push(`<text x="${(x0+x1)/2}" y="${GA.H-5}" fill="#9aa0b8" font-size="11" text-anchor="middle">iron loss (kW) · lower is better</text>`);
-  s.push(`<text x="13" y="${(y0+y1)/2}" fill="#9aa0b8" font-size="11" text-anchor="middle" transform="rotate(-90 13 ${(y0+y1)/2})">mean torque (Nm) · higher is better</text>`);
-  // HV reference box
-  s.push(`<rect x="${x0}" y="${y1}" width="${gx(HVREF[0])-x0}" height="${gy(HVREF[1])-y1}" fill="rgba(34,211,238,.04)" stroke="rgba(34,211,238,.35)" stroke-dasharray="4 4"/>`);
-  s.push(`<text class="halo" x="${x0+8}" y="${y1+16}" fill="rgba(34,211,238,.8)" font-size="10.5">HV reference box · iron ×1.2 / torque ×0.8</text>`);
-  const pts=okUpTo(k);
-  pts.forEach(p=>{
-    const col=GENCOL[p.it-1],last=p.it===k,ib=inBox(p);
-    s.push(`<circle class="pp" data-t="${p.t}" cx="${gx(clamp(p.iron,GA.x0,GA.x1))}" cy="${gy(clamp(p.tq,GA.y0,GA.y1))}" r="${last?4.4:3.4}" fill="${ib?col:'none'}" stroke="${col}" stroke-width="${ib?0:1.3}" opacity="${last?.95:.6}">${pop&&last?'<animate attributeName="r" values="0;8;4.4" dur="0.5s"/>':''}</circle>`);
+  s.push(`<defs><clipPath id="pClip"><rect x="${x0}" y="${y1}" width="${x1-x0}" height="${y0-y1}"/></clipPath></defs>`);
+  s.push(`<rect x="${x0}" y="${y1}" width="${x1-x0}" height="${y0-y1}" fill="rgba(255,255,255,.015)"/>`);
+  // hypervolume: generation k region first (largest), earlier regions on top -> visible band g = area gained in generation g
+  const base=[{iron:BASE.iron,tq:BASE.tq}];
+  const regs=[];for(let g=k;g>=1;g--)regs.push([g,frontOf(okUpTo(g))]);
+  s.push(`<g clip-path="url(#pClip)">`);
+  regs.forEach(([g,f])=>s.push(`<path d="${regionPath(f)}" fill="${BAND[g-1]}" opacity="${g===k?aNew:1}"/>`));
+  if(k===0)s.push(`<path d="${regionPath(base)}" fill="${BAND[0]}"/>`);
+  s.push(`</g>`);
+  // grid + axes
+  for(const v of [-30,-20,-10,0,10,20])s.push(`<line x1="${gx(v)}" y1="${y1}" x2="${gx(v)}" y2="${y0}" stroke="rgba(255,255,255,${v===0?.16:.06})"/><text x="${gx(v)}" y="${y0+18}" fill="#c8cee0" font-size="13" text-anchor="middle">${v>0?'+':''}${v}</text>`);
+  for(const v of [-20,-10,0,10,20])s.push(`<line x1="${x0}" y1="${gy(v)}" x2="${x1}" y2="${gy(v)}" stroke="rgba(255,255,255,${v===0?.16:.06})"/><text x="${x0-9}" y="${gy(v)+4.5}" fill="#c8cee0" font-size="13" text-anchor="end">${v>0?'+':''}${v}</text>`);
+  s.push(`<text x="${(x0+x1)/2}" y="${GA.H-6}" fill="#e6e9f2" font-size="13.5" font-weight="800" text-anchor="middle">${t('ga.ax.x')}</text>`);
+  s.push(`<text x="16" y="${(y0+y1)/2}" fill="#e6e9f2" font-size="13.5" font-weight="800" text-anchor="middle" transform="rotate(-90 16 ${(y0+y1)/2})">${t('ga.ax.y')}</text>`);
+  s.push(`<g clip-path="url(#pClip)">`);
+  // designs: earlier generations grey, generation k by agent
+  pts.filter(inBox).forEach(p=>{
+    const cur=p.it===k,col=cur?(p.arm==='to'?'#6ee7b7':'#ffce86'):'#646a86';
+    s.push(`<circle class="pp" data-t="${p.t}" cx="${gx(px_(p)).toFixed(1)}" cy="${gy(py_(p)).toFixed(1)}" r="${cur?4.6:3.3}" fill="${col}" opacity="${cur?.95:.55}"/>`);
   });
-  // Pareto front stair
-  const f=frontOf(pts);
+  // previous front dashed, current front solid with outlined points
+  if(k>1){const fp_=frontOf(okUpTo(k-1));s.push(`<path d="${stairPath(fp_)}" fill="none" stroke="#9aa0b8" stroke-width="1.6" stroke-dasharray="6 5" opacity="${.9*aNew}"/>`);}
+  const f=k?frontOf(okUpTo(k-1).concat(pts.filter(p=>p.it===k))):[];
   if(f.length){
-    let d='';f.forEach((p,i)=>{const X=gx(p.iron),Y=gy(p.tq);if(i===0)d+=`M${X} ${Y}`;else d+=` H${X} V${Y}`;});
-    s.push(`<path d="${d}" fill="none" stroke="#fff" stroke-width="1.6" opacity=".85" stroke-linejoin="round"/>`);
-    f.forEach(p=>s.push(`<circle cx="${gx(p.iron)}" cy="${gy(p.tq)}" r="5.6" fill="none" stroke="#fff" stroke-width="1.5"/>`));
+    s.push(`<path d="${stairPath(f)}" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" opacity="${k>1?aNew:1}"/>`);
+    f.forEach(p=>s.push(`<circle cx="${gx(px_(p)).toFixed(1)}" cy="${gy(py_(p)).toFixed(1)}" r="6.2" fill="none" stroke="#fff" stroke-width="1.8" pointer-events="none"/>`));
   }
-  // baseline
-  const bx=gx(BASE.iron),by=gy(BASE.tq);
-  s.push(`<path d="M${bx} ${by-8} L${bx+8} ${by} L${bx} ${by+8} L${bx-8} ${by} Z" fill="#fff" stroke="#070a11" stroke-width="1.4"/>`);
+  s.push(`</g>`);
+  // reference design
+  s.push(`<rect x="${gx(0)-6}" y="${gy(0)-6}" width="12" height="12" fill="#fff" stroke="#070a11" stroke-width="1.4"/>`);
   $('#paretoSvg').innerHTML=s.join('');
 }
 const HV={W:300,H:150,pl:38,pr:12,pt:14,pb:28,x0:0,x1:300,y0:10,y1:46};
@@ -466,49 +492,29 @@ function drawHV(k){
   if(k>0){const p=pts[pts.length-1];s.push(`<text x="${hx(p[0])-6}" y="${hy(p[1])-8}" fill="#eef0f7" font-size="10" text-anchor="end" font-weight="700">${p[1].toFixed(2)}</text>`);}
   $('#hvSvg').innerHTML=s.join('');
 }
-function gaInit(){drawPareto(0,false);$('#parStat').textContent='archive 1 · baseline';}
+function gaInit(){drawPareto(0,[],1);}
 function gaStep(k){
   gaK=k;const g=G[k-1];
   $$('#gens .gp').forEach((d,i)=>{d.classList.toggle('on',i<k);d.classList.toggle('cur',i===k-1);});
   // animate the new generation's points in
-  const prev=okUpTo(k-1).length,now=okUpTo(k).length;
-  const newPts=C.points.filter(p=>p.ok&&p.it===k);
-  tween(1500,kk=>{const n=Math.ceil(kk*newPts.length);const sub=C.points.filter(p=>p.ok&&(p.it<k||(p.it===k&&newPts.indexOf(p)<n)));drawParetoSub(sub,k);},()=>drawPareto(k,false));
+  const older=okUpTo(k-1),newPts=C.points.filter(p=>p.ok&&p.it===k);
+  tween(1400,kk=>{drawPareto(k,older.concat(newPts.slice(0,Math.ceil(kk*newPts.length))),0);},
+    ()=>tween(900,kk=>drawPareto(k,older.concat(newPts),kk)));
   drawHV(k);
   const pts=okUpTo(k),f=frontOf(pts);
-  $('#parStat').textContent=`archive ${pts.length+1} · front ${g.front_size} (${f.length} in box)`;
   $('#hvStat').textContent=`×${(g.hv/g.hv_base).toFixed(2)}`;
   // gallery
   const gal=$('#gallery');gal.innerHTML='';
-  f.slice(0,8).forEach((p,i)=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<img class="thumb" src="${TH(p.t)}" alt=""><b>${p.c}</b><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;gal.appendChild(d);after(80+i*90,()=>d.classList.add('show'));});
-  $('#galInfo').textContent=`${f.length} designs`;
+  // every design on the archive's Pareto front after generation k (it may come from any earlier generation)
+  f.forEach((p,i)=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<img class="thumb" src="${TH(p.t)}" alt=""><b>${p.c}</b><em style="--c:${GENCOL[p.it-1]}">${t('ga.gen')} ${p.it}</em><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;gal.appendChild(d);after(80+i*70,()=>d.classList.add('show'));});
+  $('#galInfo').textContent=t('ga.gal.n').replace('{n}',f.length).replace('{k}',k);
   // KPIs
   const att=C.points.filter(p=>p.it<=k).length,succ=G.slice(0,k).reduce((a,x)=>a+x.succ,0);
-  $('#kFea').textContent=`${pts.length} / ${att}`;$('#kSucc').textContent=succ;$('#kFront').textContent=`${g.front_size} (${f.length})`;
+  $('#kFea').textContent=`${pts.length} / ${att}`;$('#kSucc').textContent=succ;$('#kFront').textContent=`${f.length}`;
   animNum($('#kHV'),k>1?G[k-2].hv/g.hv_base:1,g.hv/g.hv_base,900,v=>'×'+v.toFixed(2));
   // arms
   const ab=$('#armbars');ab.innerHTML='';
   Object.entries(g.arms).forEach(([nm,v],i)=>{const r=document.createElement('div');r.className='ab '+(nm==='topology'?'to':nm==='transfer'?'tr':'li');r.innerHTML=`<span>${nm}</span><div class="bar"><i></i></div><span class="v">${v.success} / ${v.n}</span>`;ab.appendChild(r);after(100+i*80,()=>{r.querySelector('i').style.width=(v.n?v.success/v.n*100:0)+'%';});});
-}
-function drawParetoSub(sub,k){
-  // same as drawPareto but with an explicit subset (used while a generation streams in)
-  const keep=C.points;C.points=sub;try{drawPareto(k,true);}finally{C.points=keep;}
-}
-function gaFinal(){
-  const svg=$('#paretoSvg');
-  // rightmost design takes the top row, so the leader lines never cross
-  const picks=['PM_1038','PM_1214','PM_1340'].map(c=>C.points.find(p=>p.c===c)).filter(Boolean).sort((a,b)=>b.iron-a.iron);
-  const yBox=gy(HVREF[1]),colX=gx(1.13);
-  picks.forEach((p,i)=>{
-    const X=gx(p.iron),Y=gy(p.tq),ry=yBox+22+i*22;
-    const lbl=`${p.c}   iron ${fp(pctOf(p.iron,BASE.iron))} · torque ${fp(pctOf(p.tq,BASE.tq))}`;
-    svg.insertAdjacentHTML('beforeend',`<g class="callout" style="opacity:0;transition:opacity .5s ${i*.15}s">`+
-      `<path d="M${X} ${Y+7} V${ry} H${colX}" fill="none" stroke="#f5a524" stroke-width="1.1" opacity=".75"/>`+
-      `<circle cx="${X}" cy="${Y}" r="7" fill="none" stroke="#f5a524" stroke-width="1.8"/>`+
-      `<circle cx="${colX}" cy="${ry}" r="2.4" fill="#f5a524"/>`+
-      `<text class="halo" x="${colX+8}" y="${ry+4}" fill="#ffce86" font-size="11.5" font-weight="800">${lbl}</text></g>`);
-  });
-  requestAnimationFrame(()=>$$('#paretoSvg .callout').forEach(g=>g.style.opacity=1));
 }
 /* tooltip for the embedding map */
 $('#embSvg').addEventListener('mousemove',e=>{
@@ -564,7 +570,7 @@ const SCENES={
     {who:'agent',key:'ga.s5',after:()=>gaStep(3)},
     {who:'agent',key:'ga.s6',after:()=>gaStep(4)},
     {who:'agent',key:'ga.s7',after:()=>gaStep(5)},
-    {who:'agent',key:'ga.s8',after:gaFinal},
+    {who:'agent',key:'ga.s8'},
   ],
 };
 

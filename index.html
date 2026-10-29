@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=114">
+<link rel="stylesheet" href="assets/style.css?v=115a">
 </head>
 <body>
 <div class="app">
@@ -59,7 +59,7 @@
       <div class="nav-label" data-i18n="side.loop">Loop</div>
       <button class="nav-item" data-view="agent" data-agent="campaign">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 3v5h-5"/><circle cx="12" cy="12" r="2"/></svg></span>
-        <span class="meta"><b data-i18n="nav.ga.t">GA Campaign</b><span data-i18n="nav.ga.s">5 generations · Pareto front</span></span>
+        <span class="meta"><b data-i18n="nav.ga.t">Design Optimization</b><span data-i18n="nav.ga.s">5 generations · Pareto front</span></span>
         <span class="dot cyan"></span>
       </button>
     </nav>
@@ -156,7 +156,7 @@
         </div>
 
         <div class="loopstrip" data-go="campaign">
-          <div class="lh"><span data-i18n="loop.h">GA loop · one generation</span><span class="line"></span><span class="mono" data-i18n="loop.sub">click to play the 5-generation campaign</span></div>
+          <div class="lh"><span data-i18n="loop.h">GA loop · one generation</span><span class="line"></span><span class="mono" data-i18n="loop.sub">click to play Design Optimization</span></div>
           <div class="lnodes">
             <div class="ln p"><b data-i18n="loop.n1">Parents</b><span data-i18n="loop.n1s">Pareto front of the FEA archive · 4–8</span></div><div class="larr">→</div>
             <div class="ln g"><b data-i18n="loop.n2">Exploration</b><span data-i18n="loop.n2s">zero-shot T2I · topology move</span></div><div class="larr">+</div>
@@ -360,7 +360,7 @@
                     <div class="mcard"><span data-i18n="ev.m.save">FEA time saved</span><b id="mSave">0 min</b></div>
                   </div>
                 </div>
-                <button class="readybtn" id="evReady" onclick="gotoAgent('campaign')" data-i18n="ev.ready">Generation evaluated — play the GA campaign →</button>
+                <button class="readybtn" id="evReady" onclick="gotoAgent('campaign')" data-i18n="ev.ready">Generation evaluated — go to Design Optimization →</button>
               </div>
             </div>
 
@@ -369,13 +369,16 @@
               <div class="ga-wrap">
                 <div class="gens" id="gens"></div>
                 <div class="gcard on" id="c-pareto">
-                  <div class="gh"><span class="k">∑</span><span data-i18n="ga.par.h">FEA archive · Pareto front</span><span class="gh-r" id="parStat"></span></div>
-                  <svg id="paretoSvg" viewBox="0 0 820 360"></svg>
-                  <div class="legend">
-                    <i><b style="background:#5b8cff"></b>G1</i><i><b style="background:#22d3ee"></b>G2</i><i><b style="background:#34d399"></b>G3</i><i><b style="background:#f5a524"></b>G4</i><i><b style="background:#fb6f84"></b>G5</i>
-                    <i><b style="background:#fff;border-radius:1px;transform:rotate(45deg)"></b><span data-i18n="ga.leg.base">baseline</span></i>
-                    <i><b style="background:transparent;border:1.5px solid #fff"></b><span data-i18n="ga.leg.front">Pareto front</span></i>
-                    <i><b style="background:transparent;border:1.5px solid #9aa0b8"></b><span data-i18n="ga.leg.out">outside the box (hollow)</span></i>
+                  <div class="gh"><span class="k">∑</span><span data-i18n="ga.par.h">Pareto front</span></div>
+                  <svg id="paretoSvg" viewBox="0 0 820 400"></svg>
+                  <div class="legend p-legend">
+                    <i><b style="background:#6ee7b7"></b><span data-i18n="ga.leg.ex">Exploration agent</span></i>
+                    <i><b style="background:#ffce86"></b><span data-i18n="ga.leg.xp">Exploitation agent</span></i>
+                    <i><b style="background:#646a86"></b><span data-i18n="ga.leg.old">Earlier designs</span></i>
+                    <i><b style="background:transparent;border:1.8px solid #fff"></b><span data-i18n="ga.leg.front">Pareto front</span></i>
+                    <i><b class="dash"></b><span data-i18n="ga.leg.prev">Previous front</span></i>
+                    <i><b style="background:#fff;border-radius:1px"></b><span data-i18n="ga.leg.base">Reference design</span></i>
+                    <i><b style="background:#1e6953;border-radius:2px"></b><span data-i18n="ga.leg.hv">Hypervolume</span></i>
                   </div>
                 </div>
                 <div class="ga-mid">
@@ -408,7 +411,7 @@
 <div class="tip" id="tip"></div>
 
 <script src="assets/data.js?v=6"></script>
-<script src="assets/i18n.js?v=12"></script>
-<script src="assets/app.js?v=12"></script>
+<script src="assets/i18n.js?v=13a"></script>
+<script src="assets/app.js?v=13a"></script>
 </body>
 </html>
