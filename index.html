@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=9">
+<link rel="stylesheet" href="assets/style.css?v=11">
 </head>
 <body>
 <div class="app">
@@ -255,7 +255,7 @@
               <div class="gen-wrap">
                 <div class="arms">
                   <div class="gcard arm-ex" id="g-explore">
-                    <div class="gh agent-h"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration agent</span><span class="gh-r">zero-shot T2I</span></div>
+                    <div class="gh"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration agent</span><span class="gh-r">zero-shot T2I</span></div>
                     <p class="arm-sub" data-i18n="ge.ex.sub">Generates diverse new topologies</p>
                     <div class="prompt">
                       <div class="p-lab" data-i18n="ge.ex.role">Role prompt</div>
@@ -266,7 +266,7 @@
                     <div class="gal-grid" id="exGrid"></div>
                   </div>
                   <div class="gcard arm-xp" id="g-exploit">
-                    <div class="gh agent-h"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation agent</span><span class="gh-r">fine-tuned T2I</span></div>
+                    <div class="gh"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation agent</span><span class="gh-r">fine-tuned T2I</span></div>
                     <p class="arm-sub" data-i18n="ge.xp.sub">Refines designs along a text gradient</p>
                     <div class="prompt">
                       <div class="p-lab"><span>Text gradient</span> · <b class="p-op" id="xpArm"></b></div>
@@ -276,7 +276,7 @@
                   </div>
                 </div>
                 <div class="gcard" id="g-pool">
-                  <div class="gh agent-h"><span class="k">C</span><span data-i18n="ge.pool.h">Filtering agent</span><span class="gh-r">VLM-ensemble embedding · FPS</span></div>
+                  <div class="gh"><span class="k">C</span><span data-i18n="ge.pool.h">Filtering agent</span><span class="gh-r">VLM-ensemble embedding · FPS</span></div>
                   <p class="arm-sub" data-i18n="ge.pool.sub">Keeps a diverse set in a multi-modal embedding space</p>
                   <div class="filt">
                     <div class="pipe" id="embPipe">
@@ -337,13 +337,13 @@
                 </div>
                 <div class="ev-mid">
                   <div class="gcard" id="e-eps">
-                    <div class="gh"><span class="k">2</span><span data-i18n="ev.eps.h">ε-dominance vs parent · generation 1</span><span class="gh-r" id="epsInfo"></span></div>
+                    <div class="gh"><span class="k">2</span><span data-i18n="ev.eps.h">ε-dominance vs parent</span><span class="gh-r" id="epsInfo"></span></div>
                     <svg id="epsSvg" viewBox="0 0 420 300"></svg>
                     <div class="legend"><i><b style="background:#34d399"></b><span data-i18n="ev.leg.s">ε-success</span></i><i><b style="background:#646a86"></b><span data-i18n="ev.leg.f">no improvement</span></i><i><b style="background:rgba(52,211,153,.3);border-radius:2px"></b><span data-i18n="ev.leg.box">ε region</span></i></div>
                   </div>
                   <div class="ev-side">
                     <div class="gcard" id="e-sur">
-                      <div class="gh"><span class="k">3</span><span data-i18n="ev.sur.h">Surrogate · CNN deep ensemble</span></div>
+                      <div class="gh"><span class="k">3</span><span data-i18n="ev.sur.h">CNN surrogate</span></div>
                       <div class="nn-rows">
                         <div class="nn-row"><span>backbone</span><b>ResNet18 × 5 · β-NLL</b></div>
                         <div class="nn-row"><span data-i18n="ev.sur.in">input</span><b data-i18n="ev.sur.inv">224 px one-hot label map</b></div>
@@ -354,14 +354,14 @@
                       <div class="foot" data-i18n="ev.sur.foot">active learning: every FEA result becomes a label</div>
                     </div>
                     <div class="gcard" id="e-dir">
-                      <div class="gh"><span class="k">4</span><span data-i18n="ev.dir.h">Improvement directions</span><span class="gh-r" id="dirInfo"></span></div>
+                      <div class="gh"><span class="k">4</span><span data-i18n="ev.dir.h">Text gradients</span><span class="gh-r" id="dirInfo"></span></div>
                       <pre class="direction" id="dirOut"></pre>
                     </div>
                   </div>
                 </div>
                 <div class="ev-foot">
                   <div class="gcard" id="e-score">
-                    <div class="gh"><span class="k">5</span><span data-i18n="ev.sc.h">Operator scoreboard</span><span class="gh-r" data-i18n="ev.sc.r">→ next generation's shares</span></div>
+                    <div class="gh"><span class="k">5</span><span data-i18n="ev.sc.h">Operator scoreboard</span></div>
                     <div class="scores" id="scores"></div>
                   </div>
                   <div class="gcard" id="e-report">
@@ -394,11 +394,11 @@
                 </div>
                 <div class="ga-mid">
                   <div class="gcard on" id="c-hv">
-                    <div class="gh"><span class="k">HV</span><span data-i18n="ga.hv.h">hypervolume vs FEA budget</span><span class="gh-r" id="hvStat"></span></div>
+                    <div class="gh"><span class="k">HV</span><span data-i18n="ga.hv.h">Hypervolume</span><span class="gh-r" id="hvStat"></span></div>
                     <svg id="hvSvg" viewBox="0 0 300 150"></svg>
                   </div>
                   <div class="gcard on" id="c-gal">
-                    <div class="gh"><span class="k">◉</span><span data-i18n="ga.gal.h">Front gallery · inside the reference box</span><span class="gh-r" id="galInfo"></span></div>
+                    <div class="gh"><span class="k">◉</span><span data-i18n="ga.gal.h">Pareto front designs</span><span class="gh-r" id="galInfo"></span></div>
                     <div class="gallery" id="gallery"></div>
                   </div>
                 </div>
@@ -407,7 +407,7 @@
                   <div class="mcard green"><span data-i18n="ga.k.succ">ε-successes</span><b id="kSucc">—</b></div>
                   <div class="mcard cyan"><span data-i18n="ga.k.front">front (in box)</span><b id="kFront">—</b></div>
                   <div class="mcard amber"><span data-i18n="ga.k.hv">HV / baseline</span><b id="kHV">—</b></div>
-                  <div class="gcard on"><div class="gh"><span class="k">⚖</span><span data-i18n="ga.arms">arms · success / tried</span></div><div class="armbars" id="armbars"></div></div>
+                  <div class="gcard on"><div class="gh"><span class="k">⚖</span><span data-i18n="ga.arms">Arms</span></div><div class="armbars" id="armbars"></div></div>
                 </div>
               </div>
             </div>
@@ -422,7 +422,7 @@
 <div class="tip" id="tip"></div>
 
 <script src="assets/data.js?v=5"></script>
-<script src="assets/i18n.js?v=8"></script>
-<script src="assets/app.js?v=8"></script>
+<script src="assets/i18n.js?v=10"></script>
+<script src="assets/app.js?v=10"></script>
 </body>
 </html>

@@ -390,11 +390,11 @@ function gaStep(k){
   drawHV(k);
   const pts=okUpTo(k),f=frontOf(pts);
   $('#parStat').textContent=`archive ${pts.length+1} · front ${g.front_size} (${f.length} in box)`;
-  $('#hvStat').textContent=`HV ${g.hv.toFixed(2)} · ×${(g.hv/g.hv_base).toFixed(2)}`;
+  $('#hvStat').textContent=`×${(g.hv/g.hv_base).toFixed(2)}`;
   // gallery
   const gal=$('#gallery');gal.innerHTML='';
   f.slice(0,8).forEach((p,i)=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<img class="thumb" src="${TH(p.t)}" alt=""><b>${p.c}</b><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;gal.appendChild(d);after(80+i*90,()=>d.classList.add('show'));});
-  $('#galInfo').textContent=`${f.length} designs · iron ↓`;
+  $('#galInfo').textContent=`${f.length} designs`;
   // KPIs
   const att=C.points.filter(p=>p.it<=k).length,succ=G.slice(0,k).reduce((a,x)=>a+x.succ,0);
   $('#kFea').textContent=`${pts.length} / ${att}`;$('#kSucc').textContent=succ;$('#kFront').textContent=`${g.front_size} (${f.length})`;
