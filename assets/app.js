@@ -357,7 +357,7 @@ function drawSig(){
 }
 function hybReset(){
   hybStop();HY.tokens.forEach(t=>t.el.remove());HY.tokens=[];HY.queue=[];HY.fea=0;HY.ai=0;HY.round=-1;
-  $('#reason').classList.remove('show');$('#llmChip').classList.remove('act');$('#roundInfo').textContent='';
+  $('#llmChip').classList.remove('act');$('#roundInfo').textContent='';
   setTau(HYB.tau_init||118.9);hybCounters();
 }
 function hybCounters(){
@@ -395,10 +395,8 @@ function evHybrid(){$('#e-hyb').classList.add('on');hybPlace();hybRound(0);}
 function evLLM(){
   const R1=HYB.rounds[0],R2=HYB.rounds[1];if(!R2)return;
   $('#llmChip').classList.add('act');
-  $('#reason').innerHTML=`ρ = |error| / σ = <b>${R1.calib.toFixed(2)}</b> &lt; 1 → τ <b>${R1.tau.toFixed(1)} → ${R2.tau.toFixed(1)} W</b><br>“${esc(R2.reasoning)}”`;
-  $('#reason').classList.add('show');
   const from=HY.tau,to=R2.tau;tween(1000,k=>{HY.tau=lerp(from,to,k);$('#tauVal').textContent=HY.tau.toFixed(1)+' W';$('#gateMark').style.left=((HY.tau-SIG_LO)/(SIG_HI-SIG_LO)*100)+'%';});
-  after(5200,()=>{$('#reason').classList.remove('show');$('#llmChip').classList.remove('act');});
+  after(5200,()=>$('#llmChip').classList.remove('act'));
 }
 function evRound2(){hybRound(1);}
 function evDone(){after(1500,()=>$('#evReady').classList.add('show'));}
