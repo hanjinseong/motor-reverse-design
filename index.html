@@ -9,7 +9,7 @@
 <meta property="og:description" content="Multi-agent, GA-based non-parametric IPMSM design optimization over rotor images. Live demo with real campaign data.">
 <meta property="og:image" content="https://hanjinseong.github.io/motor-reverse-design/assets/motor_hero.jpg">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=116">
+<link rel="stylesheet" href="assets/style.css?v=118">
 </head>
 <body>
 <div class="app">
@@ -217,7 +217,7 @@
                 <div class="gcard" id="dc-ref">
                   <div class="gh"><span class="k">1</span><span data-i18n="ds.ref.h">Reference image</span><span class="ok">✓</span></div>
                   <div class="gb ref-b">
-                    <div class="ref-img"><img class="thumb" src="assets/d/base.png" alt="reference rotor patch"><div class="ref-leg"><i class="c-iron">iron</i><i class="c-void">void</i><i class="c-pm">magnet</i></div></div>
+                    <div class="ref-img"><img class="ref-pic" src="assets/ref.png" alt="reference motor cross-section"><div class="ref-leg"><i class="c-rt">rotor</i><i class="c-st">stator</i><i class="c-pm">magnet</i><i class="c-vd">void</i><i class="c-cl">coil</i></div></div>
                   </div>
                 </div>
                 <div class="gcard" id="dc-space">
@@ -256,6 +256,7 @@
                 <div class="arms">
                   <div class="gcard arm-ex" id="g-explore">
                     <div class="gh"><span class="k">A</span><span data-i18n="ge.ex.h">Exploration agent</span><span class="gh-r">zero-shot T2I</span></div>
+                    <div class="gal-grid" id="exGrid"></div>
                     <p class="arm-sub" data-i18n="ge.ex.sub">Generates diverse new topologies</p>
                     <div class="prompt">
                       <div class="p-lab" data-i18n="ge.ex.role">Role prompt</div>
@@ -263,16 +264,15 @@
                       <div class="p-lab"><span data-i18n="ge.ex.move">Topology move</span> <b class="p-op" id="exOp"></b></div>
                       <div class="p-move" id="exMove"></div>
                     </div>
-                    <div class="gal-grid" id="exGrid"></div>
                   </div>
                   <div class="gcard arm-xp" id="g-exploit">
                     <div class="gh"><span class="k">B</span><span data-i18n="ge.xp.h">Exploitation agent</span><span class="gh-r">fine-tuned T2I</span></div>
+                    <div class="gal-grid" id="xpGrid"></div>
                     <p class="arm-sub" data-i18n="ge.xp.sub">Refines designs along a text gradient</p>
                     <div class="prompt">
                       <div class="p-lab"><span>Text gradient</span> · <b class="p-op" id="xpArm"></b></div>
                       <pre class="p-grad" id="xpGrad"></pre>
                     </div>
-                    <div class="gal-grid" id="xpGrid"></div>
                   </div>
                 </div>
                 <div class="gcard" id="g-pool">
