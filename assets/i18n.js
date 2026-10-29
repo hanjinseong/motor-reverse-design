@@ -62,7 +62,7 @@ window.I18N = {
   'ev.f3.t':`FEA model`,
   'ev.f4.t':`Maxwell 2D solve`,
   'ev.tau.lab':`switching threshold τ`,'ev.tau.sub':`on σ of predicted iron loss`,'ev.sig.h':`σ of the 60 designs this round`,
-  'ev.n.pop':`Filtered designs`,'ev.n.gate':`uncertainty gate`,'ev.n.fea':`~53 s · exact`,'ev.n.ai':`milliseconds · μ + σ`,'ev.n.sur':`Retrain surrogate`,
+  'ev.n.pop':`Filtered designs`,'ev.n.gate':`uncertainty gate`,'ev.n.sur':`Retrain surrogate`,
   'ev.m.fea':`FEA calls`,'ev.m.ai':`AI evaluations`,'ev.m.share':`AI share`,'ev.m.save':`FEA time saved`,
   'ev.ready':`Generation evaluated — go to Design Optimization →`,
   /* campaign viz */
@@ -163,7 +163,7 @@ window.I18N = {
   'ev.f3.t':`FEA 모델`,
   'ev.f4.t':`Maxwell 2D 해석`,
   'ev.tau.lab':`전환 문턱 τ`,'ev.tau.sub':`예측 철손의 σ 기준`,'ev.sig.h':`이번 라운드 60개 설계의 σ`,
-  'ev.n.pop':`필터 통과 설계`,'ev.n.gate':`불확실성 게이트`,'ev.n.fea':`약 53 s · 정확`,'ev.n.ai':`수 ms · μ + σ`,'ev.n.sur':`서러게이트 재학습`,
+  'ev.n.pop':`필터 통과 설계`,'ev.n.gate':`불확실성 게이트`,'ev.n.sur':`서러게이트 재학습`,
   'ev.m.fea':`FEA 호출`,'ev.m.ai':`AI 평가`,'ev.m.share':`AI 비중`,'ev.m.save':`절약한 FEA 시간`,
   'ev.ready':`세대 평가 완료 — 설계 최적화로 →`,
   'ga.par.h':`Pareto front`,'ga.hv.h':`Hypervolume`,'ga.gal.h':`Pareto front 설계`,'ga.gal.n':`{n}개 · {k}세대 후`,
