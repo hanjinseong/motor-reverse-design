@@ -405,7 +405,12 @@ img{user-select:none}
 .ga-mid{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;align-items:start}
 #paretoSvg,#hvSvg{width:100%;height:auto;display:block}
 #hvSvg{padding:6px 8px 2px}
-.gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:12px 14px}
+.gallery{display:flex;flex-direction:column;gap:14px;padding:12px 14px 14px}
+.gal-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.gal-lab{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:15px;font-weight:800;color:#fff}
+.gal-lab::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--gc)}
+.gal-lab b{min-width:22px;padding:1px 7px;border-radius:9px;background:rgba(255,255,255,.08);font-size:13px;text-align:center;color:var(--gc)}
+.gal-sec.loc{--gc:#7dd3fc}.gal-sec.nt{--gc:#f0abfc}
 .gi{text-align:center;opacity:0;transform:translateY(6px);transition:.4s}
 .gi.show{opacity:1;transform:none}
 .gi .thumb{border:1px solid var(--border2)}

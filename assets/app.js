@@ -503,8 +503,16 @@ function gaStep(k){
   $('#hvStat').textContent=`×${(g.hv/g.hv_base).toFixed(2)}`;
   // gallery
   const gal=$('#gallery');gal.innerHTML='';
-  // every design on the archive's Pareto front after generation k (it may come from any earlier generation)
-  f.forEach((p,i)=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<img class="thumb" src="${TH(p.t)}" alt=""><b>${p.c}</b><em style="--c:${GENCOL[p.it-1]}">${t('ga.gen')} ${p.it}</em><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;gal.appendChild(d);after(80+i*70,()=>d.classList.add('show'));});
+  // every design on the archive's Pareto front after generation k (it may come from any earlier generation),
+  // split into local edits (reference topology: 2 magnets, 3 voids) and new topologies
+  let n=0;
+  [['loc',f.filter(p=>!p.nt)],['nt',f.filter(p=>p.nt)]].forEach(([g,list])=>{
+    const sec=document.createElement('div');sec.className='gal-sec '+g;
+    sec.innerHTML=`<div class="gal-lab"><span data-i18n="ga.gal.${g}">${t('ga.gal.'+g)}</span><b>${list.length}</b></div><div class="gal-row"></div>`;
+    const row=sec.querySelector('.gal-row');
+    list.forEach(p=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<img class="thumb" src="${TH(p.t)}" alt=""><b>${p.c}</b><em style="--c:${GENCOL[p.it-1]}">${t('ga.gen')} ${p.it}</em><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;row.appendChild(d);after(80+(n++)*70,()=>d.classList.add('show'));});
+    gal.appendChild(sec);
+  });
   $('#galInfo').textContent=t('ga.gal.n').replace('{n}',f.length).replace('{k}',k);
   // KPIs
   const att=C.points.filter(p=>p.it<=k).length,succ=G.slice(0,k).reduce((a,x)=>a+x.succ,0);
