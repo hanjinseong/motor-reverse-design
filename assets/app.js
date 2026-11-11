@@ -9,6 +9,7 @@ const C=window.CAMPAIGN||{points:[],gens:[],grid:[],prompts:{},baseline:{iron:1.
 const I18N=window.I18N;
 const GENCOL=['#5b8cff','#22d3ee','#34d399','#f5a524','#fb6f84'];
 const TH=t=>`assets/d/${t}.png`;
+const R3=t=>`assets/r3d/${t}.png`;   /* 3D rotor rebuilt from the design's image-to-CAD output (Pareto gallery) */
 const pctOf=(v,b)=>(v/b-1)*100;
 const fp=(x,d=1)=>(x>0?'+':x<0?'−':'')+Math.abs(x).toFixed(d)+' %';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -510,7 +511,7 @@ function gaStep(k){
     const sec=document.createElement('div');sec.className='gal-sec '+g;
     sec.innerHTML=`<div class="gal-lab"><span data-i18n="ga.gal.${g}">${t('ga.gal.'+g)}</span><b>${list.length}</b></div><div class="gal-row"></div>`;
     const row=sec.querySelector('.gal-row');
-    list.forEach(p=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<img class="thumb" src="${TH(p.t)}" alt=""><b>${p.c}</b><em style="--c:${GENCOL[p.it-1]}">${t('ga.gen')} ${p.it}</em><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;row.appendChild(d);after(80+(n++)*70,()=>d.classList.add('show'));});
+    list.forEach(p=>{const d=document.createElement('div');d.className='gi';d.innerHTML=`<div class="g3"><img class="r3" src="${R3(p.t)}" alt="" onerror="this.parentNode.classList.add('no3d');this.remove()"><img class="thumb" src="${TH(p.t)}" alt=""></div><b>${p.c}</b><em style="--c:${GENCOL[p.it-1]}">${t('ga.gen')} ${p.it}</em><span>${fp(pctOf(p.iron,BASE.iron))} / ${fp(pctOf(p.tq,BASE.tq))}</span>`;row.appendChild(d);after(80+(n++)*70,()=>d.classList.add('show'));});
     gal.appendChild(sec);
   });
   $('#galInfo').textContent=t('ga.gal.n').replace('{n}',f.length).replace('{k}',k);
