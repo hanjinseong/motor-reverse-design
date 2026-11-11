@@ -406,19 +406,19 @@ img{user-select:none}
 #paretoSvg,#hvSvg{width:100%;height:auto;display:block}
 #hvSvg{padding:6px 8px 2px}
 .gallery{display:flex;flex-direction:column;gap:14px;padding:12px 14px 14px}
-.gal-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.gal-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
 .gal-lab{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:15px;font-weight:800;color:#fff}
 .gal-lab::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--gc)}
 .gal-lab b{min-width:22px;padding:1px 7px;border-radius:9px;background:rgba(255,255,255,.08);font-size:13px;text-align:center;color:var(--gc)}
 .gal-sec.loc{--gc:#7dd3fc}.gal-sec.nt{--gc:#f0abfc}
-.gi{text-align:center;opacity:0;transform:translateY(6px);transition:.4s}
+.gi{min-width:0;text-align:center;opacity:0;transform:translateY(6px);transition:.4s}
 .gi.show{opacity:1;transform:none}
 .gi .thumb{border:1px solid var(--border2)}
-/* 3D rotor with its RGB image as an inset (top-left), same square footprint as the old thumbnail */
-.gi .g3{position:relative;aspect-ratio:1;border:1px solid var(--border2);border-radius:8px;overflow:hidden;
+/* 3D rotor with its RGB image as an inset (top-left) in a square box; the box width follows the grid column */
+.gi .g3{position:relative;aspect-ratio:1;border:1px solid var(--border2);border-radius:10px;overflow:hidden;
   background:radial-gradient(circle at 62% 62%,#222b3d 0%,#121826 58%,#0b0f18 100%)}
 .gi .g3 .r3{position:absolute;right:1%;bottom:1%;width:73%;height:auto;display:block}
-.gi .g3 .thumb{position:absolute;left:4%;top:4%;width:49%;border:1px solid #000;border-radius:4px;
+.gi .g3 .thumb{position:absolute;left:4%;top:4%;width:49%;border:1px solid #000;border-radius:5px;
   box-shadow:0 1px 4px rgba(0,0,0,.7)}
 .gi .g3.no3d{border:0}
 .gi .g3.no3d .thumb{position:static;width:100%;border:1px solid var(--border2);border-radius:8px;box-shadow:none}
