@@ -417,8 +417,8 @@ img{user-select:none}
 /* 3D rotor with its RGB image as an inset (top-left), same square footprint as the old thumbnail */
 .gi .g3{position:relative;aspect-ratio:1;border:1px solid var(--border2);border-radius:8px;overflow:hidden;
   background:radial-gradient(circle at 62% 62%,#222b3d 0%,#121826 58%,#0b0f18 100%)}
-.gi .g3 .r3{position:absolute;right:1%;bottom:1%;width:77%;height:auto;display:block}
-.gi .g3 .thumb{position:absolute;left:4%;top:4%;width:40%;border:1px solid #000;border-radius:4px;
+.gi .g3 .r3{position:absolute;right:1%;bottom:1%;width:73%;height:auto;display:block}
+.gi .g3 .thumb{position:absolute;left:4%;top:4%;width:49%;border:1px solid #000;border-radius:4px;
   box-shadow:0 1px 4px rgba(0,0,0,.7)}
 .gi .g3.no3d{border:0}
 .gi .g3.no3d .thumb{position:static;width:100%;border:1px solid var(--border2);border-radius:8px;box-shadow:none}
